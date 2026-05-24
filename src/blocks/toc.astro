@@ -43,6 +43,11 @@ const filteredHeadings = headings.filter((heading) => heading.depth <= 2);
 			gap: 0.75em;
 			scroll-target-group: auto;
 
+			a:target-current {
+				background: oklch(from var(--colorPri) l c h / 0.5);
+				border-color: oklch(from var(--colorPri) l c h / 1);
+			}
+
 			a::before {
 				font-size: var(--fs-2);
 			}
