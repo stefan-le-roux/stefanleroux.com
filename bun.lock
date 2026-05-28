@@ -5,10 +5,10 @@
 		"": {
 			"name": "stefanleroux-com",
 			"dependencies": {
-				"@astrojs/markdown-satteri": "^0.2.0",
-				"@astrojs/mdx": "6.0.0",
+				"@astrojs/markdown-satteri": "0.2.1",
+				"@astrojs/mdx": "6.0.1",
 				"@astrojs/sitemap": "3.7.3",
-				"astro": "6.4.0",
+				"astro": "6.4.1",
 			},
 		},
 	},
@@ -66,14 +66,14 @@
 		],
 
 		"@astrojs/markdown-satteri": [
-			"@astrojs/markdown-satteri@0.2.0",
+			"@astrojs/markdown-satteri@0.2.1",
 			"",
 			{ "dependencies": { "@astrojs/internal-helpers": "0.10.0", "github-slugger": "^2.0.0", "satteri": "^0.6.3" } },
-			"sha512-YvjksigZSqzYazfVLbvu1VaGiZS0i//UBCcn4ygaVU8TZ3zWRV9H+f+jk6sUDnqV84rcpGPmr8vrdzLQv8mvhQ==",
+			"sha512-rsdT8ucMLmu1v/POYApJcfH/t30Yuae6pZdfFU0yG3Kya8pwNItcJ6TLqUACRlRV9W50g4gLIxCwwfWjKsJ67w==",
 		],
 
 		"@astrojs/mdx": [
-			"@astrojs/mdx@6.0.0",
+			"@astrojs/mdx@6.0.1",
 			"",
 			{
 				"dependencies": {
@@ -92,10 +92,10 @@
 					"unist-util-visit": "^5.1.0",
 					"vfile": "^6.0.3",
 				},
-				"peerDependencies": { "@astrojs/markdown-satteri": "0.2.0", "astro": "^6.4.0" },
+				"peerDependencies": { "@astrojs/markdown-satteri": "0.2.1", "astro": "^6.4.0" },
 				"optionalPeers": ["@astrojs/markdown-satteri"],
 			},
-			"sha512-089K8USBK6Zie655QdpQ+GClQ+hARb7yiUao3o3m6c6fdgUovMKvKok1UvNDdchRT9tDKU677fWu5voxTJVlig==",
+			"sha512-J5K8F7A1LMH+cj+dcxm+uAeIznkfwxMcRpG7DD6ABNDOt8da98ph6ie4TD+4FV/ojVOJK0PQGWY4hmxQORLv0w==",
 		],
 
 		"@astrojs/prism": [
@@ -1055,7 +1055,7 @@
 		],
 
 		"astro": [
-			"astro@6.4.0",
+			"astro@6.4.1",
 			"",
 			{
 				"dependencies": {
@@ -1118,7 +1118,7 @@
 				"optionalDependencies": { "sharp": "^0.34.0" },
 				"bin": { "astro": "./bin/astro.mjs" },
 			},
-			"sha512-LxTaEzMCNLksSoWVc67x6jTTentn2IsfNU7QhVajV7YvwWSbQn2KoXAEmMCuFTHqCaBV5VJrj1hRl0q+0WY4AA==",
+			"sha512-QoNBrt6XRa4t4vPMv11BB05BekZH0NNiYzJr66+I5wGN/X2UJ4K0G1UL2oN0Ojow4mvoSdtyk8qqzmiZER1CmQ==",
 		],
 
 		"axobject-query": [
