@@ -7,7 +7,8 @@ const image = "../images/favicon.svg";
 ---
 
 <LayoutDefault title={title} description={description} image={image}>
-	<section style="display: grid; place-items: center;">
+	<section style="display: grid; place-items: center; place-content: center; min-block-size: 80svh;">
+		<img src="/images/fox.svg" alt="test" width="200px" style="inline-size: min(500px, 100%);" />
 		<h1>Coming Soon</h1>
 	</section>
 </LayoutDefault>
