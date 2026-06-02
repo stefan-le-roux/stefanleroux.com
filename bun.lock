@@ -8,7 +8,7 @@
 				"@astrojs/markdown-satteri": "0.2.1",
 				"@astrojs/mdx": "6.0.1",
 				"@astrojs/sitemap": "3.7.3",
-				"astro": "6.4.2",
+				"astro": "6.4.3",
 			},
 		},
 	},
@@ -1055,7 +1055,7 @@
 		],
 
 		"astro": [
-			"astro@6.4.2",
+			"astro@6.4.3",
 			"",
 			{
 				"dependencies": {
@@ -1073,7 +1073,7 @@
 					"clsx": "^2.1.1",
 					"common-ancestor-path": "^2.0.0",
 					"cookie": "^1.1.1",
-					"devalue": "^5.6.3",
+					"devalue": "^5.8.1",
 					"diff": "^8.0.3",
 					"dset": "^3.1.4",
 					"es-module-lexer": "^2.0.0",
@@ -1118,7 +1118,7 @@
 				"optionalDependencies": { "sharp": "^0.34.0" },
 				"bin": { "astro": "./bin/astro.mjs" },
 			},
-			"sha512-8H89CH2dKL5SCU99OCqdU9BGjmPkSJqaPurywj5XMo7eMFGUFD3vsNhdEKnEh4mK4LgGje3/QDTTSIIGst0G0Q==",
+			"sha512-heArIk8zLcxuoj1WgBH2zGdAD8zKSU1mEcBvS6hYMEHRPlbtvB+4Y8ri9Z27hzeryvGaFgrH32zjghEfV2y07g==",
 		],
 
 		"axobject-query": [
@@ -1326,10 +1326,10 @@
 		],
 
 		"devalue": [
-			"devalue@5.6.3",
+			"devalue@5.8.1",
 			"",
 			{},
-			"sha512-nc7XjUU/2Lb+SvEFVGcWLiKkzfw8+qHI7zn8WYXKkLMgfGSHbgCEaR6bJpev8Cm6Rmrb19Gfd/tZvGqx9is3wg==",
+			"sha512-4CXDYRBGqN+57wVJkuXBYmpAVUSg3L6JAQa/DFqm238G73E1wuyc/JhGQJzN7vUf/CMphYau2zXbfWzDR5aTEw==",
 		],
 
 		"devlop": [
