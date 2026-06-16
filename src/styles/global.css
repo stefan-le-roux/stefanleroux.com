@@ -26,15 +26,11 @@
 	}
 
 	:where(ul, ol) {
-		padding-inline-start: 3rem;
+		padding-inline-start: 1.25em;
 
 		&:where([role="list"], [role="menu"]) {
 			list-style: none;
 			padding: 0;
-
-			li {
-				margin: 0;
-			}
 		}
 	}
 
@@ -42,9 +38,6 @@
 		display: block;
 		max-inline-size: 100%;
 		block-size: auto;
-	}
-
-	:where(img) {
 		place-content: center;
 		text-align: center;
 	}
@@ -348,6 +341,19 @@
 		}
 		&.a-end {
 			text-align: end;
+		}
+	}
+
+	.prose {
+		grid-area: slot;
+		font-size: var(--fs-1);
+
+		& > * + * {
+			margin-block-start: 1em;
+		}
+
+		& li {
+			margin-block-start: 0.5em;
 		}
 	}
 }
