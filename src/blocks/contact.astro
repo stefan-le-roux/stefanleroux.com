@@ -3,29 +3,16 @@
 	<form popover id="contactForm">
 		<label>
 			<span>Name</span>
-			<input
-				name="your-name"
-				type="text"
-				placeholder="Name"
-				autocomplete="off"
-				required
-			/>
+			<input name="name" type="text" placeholder="Name" autocomplete="off" required />
 		</label>
 		<label>
 			<span>Email</span>
-			<input
-				name="your-email"
-				type="email"
-				placeholder="user@domain.name"
-				autocomplete="off"
-				required
-			/>
+			<input name="email" type="email" placeholder="user@domain.name" autocomplete="off" required />
 		</label>
 		<label>
 			<span>Message</span>
-			<textarea name="your-message" placeholder="Message" required></textarea>
+			<textarea name="message" placeholder="Message" required></textarea>
 		</label>
-		<input type="hidden" name="_wpcf7_unit_tag" value="wpcf7-f20-p13-o1" />
 		<output id="statusMessage"></output>
 		<button class="icon_mail-send" type="submit"> Submit </button>
 	</form>
