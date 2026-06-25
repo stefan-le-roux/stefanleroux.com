@@ -3,32 +3,41 @@ const statusMessage = document.getElementById("statusMessage") as HTMLOutputElem
 
 contactForm.onsubmit = async (event) => {
 	event.preventDefault();
-	statusMessage.setAttribute("data-status", "processing");
+	statusMessage.dataset.status = "processing";
 	statusMessage.value = "Processing";
 
 	try {
-		const response = await fetch("https://lab.vivtec.co.za/mailer/process.php", {
+		const res = await fetch("https://lab.vivtec.co.za/mailer/process.php", {
 			method: "POST",
+			headers: { Accept: "application/json" },
 			body: new FormData(contactForm),
 		});
-		const result = await response.json();
-		if (result.success) {
-			statusMessage.setAttribute("data-status", "completed");
-			statusMessage.value = result.message;
+
+		let result: any = null;
+		try {
+			result = await res.json();
+		} catch {}
+
+		if (!res.ok) {
+			statusMessage.dataset.status = "error";
+			statusMessage.value = result?.message || "Sorry, something went wrong.";
+			return;
+		}
+
+		if (result?.success) {
+			statusMessage.dataset.status = "completed";
+			statusMessage.value = result.message || "Thanks!";
 			setTimeout(() => {
 				contactForm.reset();
+				statusMessage.value = "";
 				statusMessage.removeAttribute("data-status");
 			}, 3000);
 		} else {
-			statusMessage.setAttribute("data-status", "error");
-			statusMessage.value = "You made a mistake";
+			statusMessage.dataset.status = "error";
+			statusMessage.value = result?.message || "You made a mistake.";
 		}
-	} catch (error) {
-		statusMessage.setAttribute("data-status", "error");
-		statusMessage.value = "Form doesn't do anything yet";
-
-		if (error instanceof TypeError) {
-			statusMessage.value = "Fucking CORS";
-		}
+	} catch {
+		statusMessage.dataset.status = "error";
+		statusMessage.value = "Network/CORS error. Please try again.";
 	}
 };
