@@ -15,7 +15,7 @@ const { frontmatter, headings } = Astro.props;
 				<hgroup>
 					<h1>{frontmatter.title}</h1>
 					<span>
-						Published:
+						<span>Published: </span>
 						<time class="block" datetime={frontmatter.pubDate.toISOString().split("T")[0]}>
 							{frontmatter.pubDate.toISOString().split("T")[0]}
 						</time>
