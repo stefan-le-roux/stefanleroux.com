@@ -3,19 +3,16 @@ const statusMessage = document.getElementById("statusMessage") as HTMLOutputElem
 
 contactForm.onsubmit = async (event) => {
 	event.preventDefault();
-
 	statusMessage.setAttribute("data-status", "processing");
 	statusMessage.value = "Processing";
 
 	try {
-		const response = await fetch("https://lab.vivtec.co.za/forms/wp-json/contact-form-7/v1/contact-forms/20/feedback", {
+		const response = await fetch("https://lab.vivtec.co.za/mailer/process.php", {
 			method: "POST",
 			body: new FormData(contactForm),
 		});
-
 		const result = await response.json();
-
-		if (result.status === "mail_sent") {
+		if (result.success) {
 			statusMessage.setAttribute("data-status", "completed");
 			statusMessage.value = result.message;
 			setTimeout(() => {
