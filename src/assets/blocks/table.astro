@@ -1,0 +1,143 @@
+<style>
+	table {
+		--borderStyle: solid;
+		--borderWidth: 2px;
+		--borderColor: canvasText;
+		--borderShort: var(--borderStyle) var(--borderWidth) var(--borderColor);
+		--cellSize: 0.5em;
+
+		.container:has(&) {
+			border-radius: 0.25em;
+			padding: 1em;
+			background-color: oklch(from var(--blockColor) calc(l - 0.015) c h);
+			border: var(--blockBorder);
+
+			& .wrapper {
+				color-scheme: dark;
+				background-color: canvas;
+				color: canvasText;
+				overflow-x: auto;
+				padding-block: 1em;
+			}
+		}
+
+		tr {
+			display: grid;
+			grid-template-columns: calc(8ch + var(--cellSize)) repeat(7, 1fr);
+
+			thead & {
+				grid-auto-rows: 11ch;
+				white-space: nowrap;
+			}
+
+			& > td {
+				padding: var(--cellSize);
+				text-align: center;
+				place-content: center;
+				border-block-start: var(--borderShort);
+				border-inline-end: var(--borderShort);
+			}
+
+			&:last-of-type > td {
+				border-block-end: var(--borderShort);
+			}
+		}
+
+		th {
+			line-height: 1;
+
+			/* BEGIN - Rotated table headers */
+			thead & {
+				writing-mode: sideways-lr;
+				text-align: start;
+				place-self: end center;
+				padding-inline-start: var(--cellSize);
+				rotate: 45deg;
+				translate: -25% 0;
+				transform-origin: 100% 100%;
+			}
+			/* END - Rotated table headers */
+
+			tbody & {
+				text-align: end;
+				align-content: center;
+				padding-inline: var(--cellSize);
+				border-inline-end: var(--borderShort);
+				position: sticky; /* Horizontal scrolling with sticky left sidebar on smaller screens */
+				left: 0;
+				background-color: canvas;
+			}
+		}
+	}
+</style>
+
+<div class="container">
+	<div class="wrapper">
+		<table>
+			<thead>
+				<tr>
+					<th><!-- Plan type. --></th>
+					<th>Feature One</th>
+					<th>Feature Two</th>
+					<th>Feature Three</th>
+					<th>Feature Four</th>
+					<th>Feature Five</th>
+					<th>Feature Six</th>
+					<th>Feature Seven</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<th>Free</th>
+					<td>&#9989;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th>Starter</th>
+					<td>&#9989;</td>
+					<td>&#9989;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th>Pro</th>
+					<td>&#9989;</td>
+					<td>&#9989;</td>
+					<td>&#9989;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th>Comp</th>
+					<td>&#9989;</td>
+					<td>&#9989;</td>
+					<td>&#9989;</td>
+					<td>&#9989;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<th>Ultra</th>
+					<td>&#9989;</td>
+					<td>&#9989;</td>
+					<td>&#9989;</td>
+					<td>&#9989;</td>
+					<td>&#9989;</td>
+					<td>&#9989;</td>
+					<td>&#9989;</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
