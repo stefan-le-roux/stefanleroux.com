@@ -17,4 +17,19 @@ const blog = defineCollection({
 		}),
 });
 
-export const collections = { blog };
+const share = defineCollection({
+	loader: glob({ pattern: "**/*.{.astro,md,mdx}", base: "./src/posts/share/" }),
+	schema: ({ image }) =>
+		z.object({
+			title: z.string(),
+			slug: z.string(),
+			pubDate: z.date(),
+			description: z.string(),
+			author: z.string(),
+			image: image(),
+			alt: z.string(),
+			tags: z.array(z.string()),
+		}),
+});
+
+export const collections = { blog, share };
