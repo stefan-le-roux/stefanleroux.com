@@ -1,0 +1,68 @@
+<div class="contact">
+	<button class="icon_mail-send" popovertarget="contactForm">Contact</button>
+	<form popover id="contactForm">
+		<input type="hidden" name="site_id" value="stefanleroux.com" />
+		<label>
+			<span>Name</span>
+			<input name="name" type="text" placeholder="Name" autocomplete="off" required />
+		</label>
+		<label>
+			<span>Email</span>
+			<input name="email" type="email" placeholder="user@domain.name" autocomplete="off" required />
+		</label>
+		<label>
+			<span>Message</span>
+			<textarea name="message" placeholder="Message" required></textarea>
+		</label>
+		<output id="statusMessage"></output>
+		<button class="icon_mail-send" type="submit"> Submit </button>
+	</form>
+</div>
+
+<script src="../assets/scripts/forms.ts"></script>
+
+<style>
+	.contact {
+		padding-inline: var(--paddingInline);
+		display: grid;
+		gap: 1.5rem;
+
+		& > :is(a, button) {
+			font-size: var(--fontSize);
+		}
+	}
+
+	#contactForm {
+		display: none;
+		margin: auto;
+		opacity: 0;
+		inline-size: min(400px, 100% - 5rem);
+		z-index: 5;
+		transition: all 0.2s allow-discrete;
+
+		&:popover-open {
+			display: grid;
+			opacity: 1;
+
+			@starting-style {
+				display: grid;
+				opacity: 0;
+			}
+		}
+
+		&::backdrop {
+			opacity: 0;
+			background: #00000080;
+			transition: all 0.2s allow-discrete;
+		}
+
+		&:popover-open::backdrop {
+			opacity: 1;
+
+			@starting-style {
+				display: block;
+				opacity: 0;
+			}
+		}
+	}
+</style>
