@@ -1,5 +1,5 @@
 ---
-import LayoutDefault from "../assets/layouts/LayoutDefault.astro";
+import LayoutDefault from "../layouts/LayoutDefault.astro";
 import { getCollection } from "astro:content";
 import { Image } from "astro:assets";
 
@@ -28,7 +28,7 @@ const image = "../assets/images/favicon.svg";
 							<Image src={post.data.image} format="avif" layout="constrained" alt={post.data.alt} />
 							<hgroup>
 								<h2>
-									<a href={`/library/blog/${post.data.slug}/`}>{post.data.title}</a>
+									<a href={`/library/${post.data.slug}/`}>{post.data.title}</a>
 								</h2>
 								<time datetime={post.data.pubDate.toISOString().split("T")[0]}>
 									{post.data.pubDate.toISOString().split("T")[0]}
@@ -50,7 +50,7 @@ const image = "../assets/images/favicon.svg";
 							<Image src={post.data.image} format="avif" layout="constrained" alt={post.data.alt} />
 							<hgroup>
 								<h2>
-									<a href={`/library/share/${post.data.slug}/`}>{post.data.title}</a>
+									<a href={`/library/${post.data.slug}/`}>{post.data.title}</a>
 								</h2>
 								<time datetime={post.data.pubDate.toISOString().split("T")[0]}>
 									{post.data.pubDate.toISOString().split("T")[0]}
