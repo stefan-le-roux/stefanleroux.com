@@ -1,14 +1,20 @@
 ---
 interface Props {
-	href: string;
 	class?: string;
+	href: string;
+	target?: string;
 	[key: string]: any;
 }
 
-const { href, class: className, ...rest } = Astro.props;
-const finalUrl = `${import.meta.env.BASE_URL}${href}`;
+const { pathname } = Astro.url;
+const { class: className, href, rel, target, ...rest } = Astro.props;
+
+const isAbsolute = href ? href.startsWith("http://") || href.startsWith("https://") : false;
+const finalUrl = isAbsolute ? href : `${import.meta.env.BASE_URL}${href}`;
+const finalTarget = target || (isAbsolute ? "_blank" : undefined);
+const isCurrentPage = pathname === finalUrl ? "page" : undefined;
 ---
 
-<a href={finalUrl} class={className} {...rest}>
+<a class={className} href={finalUrl} target={finalTarget} aria-current={isCurrentPage} {...rest}>
 	<slot />
 </a>
