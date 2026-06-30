@@ -1,0 +1,52 @@
+---
+import "../assets/styles/global.css";
+import "../assets/styles/icons-breeze.css";
+
+const {
+	title = "Stefan le Roux",
+	description = "This is Stefan le Roux's personal site",
+	image = `${import.meta.env.BASE_URL}images/placeholder.webp`,
+	imageAlt = "Did not define alt text",
+	favicon = `${import.meta.env.BASE_URL}favicon.png`,
+	sitemap = `${import.meta.env.BASE_URL}sitemap-index.xml`,
+} = Astro.props;
+
+const baseURL = new URL(import.meta.env.BASE_URL, Astro.url).toString();
+const canonicalURL = new URL(Astro.url.pathname, Astro.url).toString();
+const imageURL = new URL(image, Astro.url).toString();
+const faviconURL = favicon.toString();
+const sitemapURL = sitemap.toString();
+---
+
+<head>
+	<meta charset="utf-8" />
+
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<meta name="robots" content="index, follow" />
+	<meta name="generator" content={Astro.generator} />
+	<meta name="color-scheme" content="dark light" />
+
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:url" content={canonicalURL} />
+	<meta name="twitter:title" content={title} />
+	<meta name="twitter:description" content={description} />
+	<meta name="twitter:image" content={imageURL} />
+
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={canonicalURL} />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
+	<meta property="og:image" content={imageURL} />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content={imageAlt} />
+
+	<link rel="canonical" href={canonicalURL} />
+	<link rel="icon" type="image/png" href={faviconURL} />
+	<link rel="sitemap" type="application/xml" title="Sitemap" href={sitemapURL} />
+	<link rel="preload" href="/fonts/space-grotesk_variable-wght.woff2" as="font" type="font/woff2" crossorigin />
+	<link rel="preload" href="/fonts/icons-breeze.woff2" as="font" type="font/woff2" crossorigin />
+	<link rel="preconnect" href="https://lab.vivtec.co.za" />
+</head>
