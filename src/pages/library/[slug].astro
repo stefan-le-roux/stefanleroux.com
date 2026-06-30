@@ -1,0 +1,56 @@
+---
+import LayoutPost from "../../layouts/LayoutPost.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+	// Fetch both collections
+	const [blogPosts, sharePosts] = await Promise.all([getCollection("blog"), getCollection("share")]);
+
+	// Combine entries with type markers
+	const allEntries = [
+		...blogPosts.map((entry) => ({ ...entry, collectionType: "blog" })),
+		...sharePosts.map((entry) => ({ ...entry, collectionType: "share" })),
+	];
+
+	// ⚠️ CRITICAL: Check for slug collisions
+	if (import.meta.env.DEV) {
+		const seenSlugs: Record<string, string[]> = {};
+		allEntries.forEach((entry) => {
+			const slug = entry.data.slug;
+			if (!seenSlugs[slug]) seenSlugs[slug] = [];
+			seenSlugs[slug].push(entry.collection);
+		});
+
+		Object.entries(seenSlugs).forEach(([slug, sources]) => {
+			if (sources.length > 1) {
+				console.error(`⛔ SLUG COLLISION: "${slug}" exists in ${sources.join(", ")}`);
+			}
+		});
+	}
+
+	// Extract headings for each entry
+	const headingsData = await Promise.all(
+		allEntries.map(async (entry) => {
+			const rendered = await render(entry);
+			return rendered.headings;
+		}),
+	);
+
+	return allEntries.map((entry, index) => ({
+		params: {
+			slug: entry.data.slug, // Only one param now
+		},
+		props: {
+			post: entry,
+			headings: headingsData[index],
+		},
+	}));
+}
+
+const { post, headings } = Astro.props;
+const { Content } = await render(post);
+---
+
+<LayoutPost frontmatter={post.data} headings={headings}>
+	<Content />
+</LayoutPost>
