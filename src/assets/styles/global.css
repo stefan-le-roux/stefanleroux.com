@@ -102,11 +102,11 @@
 	}
 
 	body {
-		--bgSize: 50px;
-		--bgWidth: 2px;
+		--bgSize: 10rem;
+		--bgWidth: 0.15rem;
 		--bgGrad:
-			color-mix(in oklch, var(--canvasText), transparent 98%) 0px,
-			color-mix(in oklch, var(--canvasText), transparent 98%) var(--bgWidth), transparent var(--bgWidth),
+			color-mix(in oklch, var(--canvasText), transparent 99%) 0px,
+			color-mix(in oklch, var(--canvasText), transparent 99%) var(--bgWidth), transparent var(--bgWidth),
 			transparent var(--bgSize);
 		background:
 			linear-gradient(90deg, var(--bgGrad)) calc(50% - (var(--bgSize) / 2) - calc(var(--bgWidth) / 2)) 50% /
