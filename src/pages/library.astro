@@ -40,28 +40,6 @@ const image = "../assets/images/favicon.svg";
 				))
 			}
 		</ul>
-		<hr />
-		<h2>Share Posts</h2>
-		<ul class="posts" role="list">
-			{
-				sharePosts.map((post) => (
-					<li>
-						<article>
-							<Image src={post.data.image} format="avif" layout="constrained" alt={post.data.alt} />
-							<hgroup>
-								<h2>
-									<a href={`/library/${post.data.slug}/`}>{post.data.title}</a>
-								</h2>
-								<time datetime={post.data.pubDate.toISOString().split("T")[0]}>
-									{post.data.pubDate.toISOString().split("T")[0]}
-								</time>
-							</hgroup>
-							<p>{post.data.description}</p>
-						</article>
-					</li>
-				))
-			}
-		</ul>
 	</section>
 </LayoutDefault>
 
@@ -85,16 +63,6 @@ const image = "../assets/images/favicon.svg";
 			border-color: oklch(from var(--colorPri) l c h / 0.5);
 		}
 
-		&:has(a:hover) {
-			& ~ li {
-				opacity: 0.5;
-			}
-		}
-
-		&:has(~ li a:hover) {
-			opacity: 0.5;
-		}
-
 		@media (prefers-reduced-motion: no-preference) {
 			& {
 				transition:
@@ -111,8 +79,14 @@ const image = "../assets/images/favicon.svg";
 		flex-flow: column;
 		gap: 1.75rem;
 
+		hgroup {
+			display: grid;
+			place-items: start;
+			gap: 0.25em;
+		}
+
 		h2 {
-			font-size: var(--fs-2);
+			font-size: var(--fs-1);
 			line-height: 1.1;
 
 			a {
