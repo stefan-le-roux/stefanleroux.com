@@ -11,7 +11,15 @@ const { frontmatter, headings } = Astro.props;
 	<section>
 		<article>
 			<header>
-				<Image src={frontmatter.image} alt={frontmatter.alt} format="avif" layout="constrained" priority />
+				<Image
+					src={frontmatter.image}
+					alt={frontmatter.alt}
+					width={1200}
+					height={630}
+					format="avif"
+					layout="constrained"
+					priority
+				/>
 				<hgroup>
 					<h1>{frontmatter.title}</h1>
 					<span>
@@ -56,7 +64,7 @@ const { frontmatter, headings } = Astro.props;
 <style>
 	section {
 		display: grid;
-		grid: "article aside" auto / 5fr 2fr;
+		grid: "article aside" auto / 3fr 1fr;
 		gap: 2rem;
 		align-items: start;
 
@@ -108,7 +116,6 @@ const { frontmatter, headings } = Astro.props;
 			display: grid;
 			place-items: start;
 			gap: 2rem;
-			text-transform: uppercase;
 			text-wrap: balance;
 		}
 
