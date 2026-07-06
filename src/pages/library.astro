@@ -3,12 +3,19 @@ import LayoutDefault from "../layouts/LayoutDefault.astro";
 import { getCollection } from "astro:content";
 import { Image } from "astro:assets";
 
-const [blogPosts, sharePosts] = await Promise.all([getCollection("blog"), getCollection("share")]);
+import Soon from "../blocks/soon.astro";
 
-const posts = [
-	...blogPosts.map((entry) => ({ ...entry, collectionType: "blog" })),
-	...sharePosts.map((entry) => ({ ...entry, collectionType: "share" })),
-].sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const isVisible = (entry: any) => entry.data.status === "visible";
+
+const [rawBlog, rawAudit, rawShare] = await Promise.all([
+	getCollection("blog"),
+	getCollection("audit"),
+	getCollection("share"),
+]);
+
+const blogPosts = rawBlog.filter(isVisible);
+const auditPosts = rawAudit.filter(isVisible);
+const sharePosts = rawShare.filter(isVisible);
 
 const title = "Library";
 const description = "My Description";
@@ -16,34 +23,150 @@ const image = "../assets/images/favicon.svg";
 ---
 
 <LayoutDefault title={title} description={description} image={image}>
-	<section class="prose">
-		<h1>Welcome to my online digital notebook</h1>
-		<hr />
-		<h2>Blog Posts</h2>
-		<ul class="posts" role="list">
-			{
-				blogPosts.map((post) => (
-					<li>
-						<article>
-							<Image src={post.data.image} format="avif" layout="constrained" alt={post.data.alt} />
-							<hgroup>
-								<h2>
-									<a href={`/library/${post.data.slug}/`}>{post.data.title}</a>
-								</h2>
-								<time datetime={post.data.pubDate.toISOString().split("T")[0]}>
-									{post.data.pubDate.toISOString().split("T")[0]}
-								</time>
-							</hgroup>
-							<p>{post.data.description}</p>
-						</article>
-					</li>
-				))
-			}
-		</ul>
+	<section>
+		<hgroup>
+			<h1>Welcome to My Library</h1>
+			<p>A collection of writing, audits, and code</p>
+		</hgroup>
+	</section>
+
+	<section>
+		<hgroup>
+			<h2 id="writings-heading">Writings</h2>
+			<p>Reflections on design, workflow, and web standards.</p>
+		</hgroup>
+		{
+			blogPosts.length > 0 ? (
+				<ul class="posts" role="list">
+					{blogPosts.map((post) => (
+						<li>
+							<article>
+								<Image
+									src={post.data.image ?? "/assets/images/placeholder.avif"}
+									alt={post.data.alt ?? ""}
+									width={320}
+									height={168}
+									format="avif"
+									layout="constrained"
+									priority
+								/>
+								<hgroup>
+									<h2>
+										<a href={`/library/${post.data.slug}/`}>{post.data.title}</a>
+									</h2>
+									<time datetime={post.data.pubDate.toISOString().split("T")[0]}>
+										{post.data.pubDate.toISOString().split("T")[0]}
+									</time>
+								</hgroup>
+								<p>{post.data.description}</p>
+							</article>
+						</li>
+					))}
+				</ul>
+			) : (
+				<Soon />
+			)
+		}
+	</section>
+
+	<section>
+		<hgroup>
+			<h2 id="audits-heading">Site Audits</h2>
+			<p>Lighthouse performance checks from recent projects.</p>
+		</hgroup>
+
+		{
+			auditPosts.length > 0 ? (
+				<ul class="posts" role="list">
+					{auditPosts.map((post) => (
+						<li>
+							<article>
+								<Image
+									src={post.data.image ?? "/assets/images/placeholder.avif"}
+									alt={post.data.alt ?? ""}
+									width={320}
+									height={168}
+									format="avif"
+									layout="constrained"
+								/>
+								<hgroup>
+									<h2>
+										<a href={`/library/${post.data.slug}/`}>{post.data.title}</a>
+									</h2>
+									<time datetime={post.data.pubDate.toISOString().split("T")[0]}>
+										{post.data.pubDate.toISOString().split("T")[0]}
+									</time>
+								</hgroup>
+								<p>{post.data.description}</p>
+							</article>
+						</li>
+					))}
+				</ul>
+			) : (
+				<Soon />
+			)
+		}
+	</section>
+
+	<section>
+		<hgroup>
+			<h2 id="snippets-heading">Snippets</h2>
+			<p>Clean HTML, CSS and JavaScript modules you can reuse.</p>
+		</hgroup>
+
+		{
+			sharePosts.length > 0 ? (
+				<ul class="posts" role="list">
+					{sharePosts.map((post) => (
+						<li>
+							<article>
+								<Image
+									src={post.data.image ?? "/assets/images/placeholder.avif"}
+									alt={post.data.alt ?? ""}
+									width={320}
+									height={168}
+									format="avif"
+									layout="constrained"
+								/>
+								<hgroup>
+									<h2>
+										<a href={`/library/${post.data.slug}/`}>{post.data.title}</a>
+									</h2>
+									<time datetime={post.data.pubDate.toISOString().split("T")[0]}>
+										{post.data.pubDate.toISOString().split("T")[0]}
+									</time>
+								</hgroup>
+								<p>{post.data.description}</p>
+							</article>
+						</li>
+					))}
+				</ul>
+			) : (
+				<Soon />
+			)
+		}
 	</section>
 </LayoutDefault>
 
 <style>
+	main {
+		display: grid;
+		gap: 2em;
+	}
+
+	section {
+		background: var(--blockColor);
+		border-radius: var(--borderRadius);
+		border: solid var(--borderWidth) var(--borderColor);
+		padding: 1em;
+		display: grid;
+		gap: 1em;
+
+		&:not(:first-of-type) {
+			margin-block-start: 1em;
+		}
+	}
+
 	.posts {
 		display: grid;
 		grid: auto / repeat(auto-fill, minmax(min(280px, 100%), 1fr));
@@ -52,7 +175,7 @@ const image = "../assets/images/favicon.svg";
 
 	li {
 		position: relative;
-		background: var(--blockColor);
+		background: oklch(from var(--blockColor) calc(l - 0.015) c h);
 		border-radius: var(--borderRadius);
 		border: solid var(--borderWidth) var(--borderColor);
 		isolation: isolate;
@@ -78,12 +201,6 @@ const image = "../assets/images/favicon.svg";
 		display: flex;
 		flex-flow: column;
 		gap: 1.75rem;
-
-		hgroup {
-			display: grid;
-			place-items: start;
-			gap: 0.25em;
-		}
 
 		h2 {
 			font-size: var(--fs-1);
@@ -129,7 +246,6 @@ const image = "../assets/images/favicon.svg";
 			overflow: hidden;
 			font-size: var(--fs-0);
 			flex-grow: 1;
-			mask: linear-gradient(to bottom, white 50%, transparent);
 		}
 
 		&::after {
