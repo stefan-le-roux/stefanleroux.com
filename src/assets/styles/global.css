@@ -1,4 +1,4 @@
-@layer reset, theme, util;
+@layer reset, theme, block, util;
 
 @layer reset {
 	:root {
@@ -289,6 +289,22 @@
 				pointer-events: none;
 			}
 		}
+	}
+}
+
+@layer block {
+	hgroup {
+		display: grid;
+		gap: 0.5em;
+		place-items: start;
+	}
+
+	blockquote {
+		font-size: var(--fs-0);
+		background: oklch(from var(--blockColor) calc(l - 0.015) c h);
+		border-radius: var(--borderRadius);
+		border: solid var(--borderWidth) var(--borderColor);
+		padding: 1em;
 	}
 }
 
