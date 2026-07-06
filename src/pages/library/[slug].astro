@@ -3,13 +3,18 @@ import LayoutPost from "../../layouts/LayoutPost.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
-	// Fetch both collections
-	const [blogPosts, sharePosts] = await Promise.all([getCollection("blog"), getCollection("share")]);
+	const [blogPosts, auditPosts, sharePosts] = await Promise.all([
+		getCollection("blog"),
+		getCollection("audit"),
+		getCollection("share"),
+	]);
 
-	// Combine entries with type markers
+	const isDraft = (entry: any) => entry.data.status !== "draft";
+
 	const allEntries = [
-		...blogPosts.map((entry) => ({ ...entry, collectionType: "blog" })),
-		...sharePosts.map((entry) => ({ ...entry, collectionType: "share" })),
+		...blogPosts.filter(isDraft).map((entry) => ({ ...entry, collectionType: "blog" })),
+		...auditPosts.filter(isDraft).map((entry) => ({ ...entry, collectionType: "audit" })),
+		...sharePosts.filter(isDraft).map((entry) => ({ ...entry, collectionType: "share" })),
 	];
 
 	// ⚠️ CRITICAL: Check for slug collisions
@@ -37,13 +42,8 @@ export async function getStaticPaths() {
 	);
 
 	return allEntries.map((entry, index) => ({
-		params: {
-			slug: entry.data.slug, // Only one param now
-		},
-		props: {
-			post: entry,
-			headings: headingsData[index],
-		},
+		params: { slug: entry.data.slug },
+		props: { post: entry, headings: headingsData[index] },
 	}));
 }
 
