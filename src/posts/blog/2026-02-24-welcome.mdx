@@ -1,55 +1,126 @@
 ---
-title: Welcome to My Digital Notebook
+title: Welcome to My Corner of the Internet
 description: Hey there! I’m Stefan le Roux, a front‑end web developer, and I’m thrilled to launch this little corner of the internet where I’ll be jotting down ideas, experiments, and reflections.
 slug: welcome
 pubDate: 2026-02-24
 author: Stefan le Roux
 image: ../../assets/images/welcome.avif
 alt: The Astro logo on a dark background with a pink glow.
-tags: ["astro", "blogging", "learning in public"]
+status: visible
 ---
 
-Hey there! I’m **Stefan le Roux**, a front‑end web developer, and I’m thrilled to launch this little corner of the internet where I’ll be jotting down ideas, experiments, and reflections. Think of it as a hybrid between a technical showcase and a personal diary. A place where code meets curiosity.
+Hi, I'm Stefan le Roux. I build front‑end interfaces for a living, and this is where I track experiments, collect thoughts, and occasionally admit when something didn't work out quite as expected.
 
----
+Think of this space as part lab notebook, part letter home. Code meets curiosity here. Sometimes they shake hands nicely. Sometimes they fight until one compromises. Either outcome teaches me something worth recording.
 
-## What You’ll Find Here
+## What You'll Find Here
 
-### Front‑End Demos
-Step‑by‑step examples of UI components, layout tricks, and interactive widgets. Each demo comes with clear explanations and ready‑to‑copy code so you can drop it straight into your own projects.
+### Demos with Source Code Included
 
-### CSS Deep‑Dives
-From fundamentals (box model, flexbox, grid) to bleeding‑edge specs such as container queries, subgrid, cascade layers, `@property`, and more. I’ll walk through the syntax, show practical use‑cases, and highlight browser support so you can stay ahead of the curve.
+Every component I post comes with files you can actually grab. No screenshots pretending to be working code. Navigation menus built without JavaScript dependencies. Card layouts that respond to container queries instead of viewport breakpoints alone. Form controls styled purely through custom properties and semantic selectors. If I show you a finished widget, the code sits right underneath it, commented and ready to paste into whatever project you're shipping this week.
 
-### Personal Musings
-Thoughts on topics that spark my interest—tech culture, productivity hacks, philosophy, or anything else that nudges my brain. These entries give a glimpse into the mind behind the code and often reveal unexpected connections that inspire new ideas.
+### CSS That Goes Deep
 
-### Reviews & Impressions
-Honest takeaways from schools, bootcamps, tools, services, and businesses I’ve interacted with. If you’re trying to decide whether a particular program or product is worth your time and money, these reviews aim to give you a realistic picture.
+I start with fundamentals and push toward specifications still rolling out in browsers. Box model and flexbox before cascade layers. Cascade layers before @property. Each feature gets syntax walkthroughs, real use cases I've personally tested, and caniuse links so you can check support for your own target browsers before adopting anything. Some of these posts cover territory nobody has documented yet because the spec landed a month ago. Others revisit older techniques that gained new relevance. Both serve the same goal: keeping practical knowledge current and within reach.
 
-### Workshop Reflections
-Recaps of any workshops I run or attend, including what worked, what didn’t, and the key lessons learned. If you’re planning to teach or learn in a workshop setting, these notes can serve as a practical guide and source of inspiration.
+### Thoughts Between the Code
 
----
+Not everything here is technical. Tech culture shapes how we build software whether we notice or not. Productivity apps created notification overload, which drove people toward focus-blocking tools, which created new categories of distraction to manage. Philosophy sits next to pixel-perfect margins more often than developers admit. These entries connect craft decisions to human behavior. Some won't solve a coding problem directly. They just ask whether certain habits deserve the time we give them.
 
-## Why This Blog Exists
+### Reviews That Tell the Truth
 
-- **Share Knowledge** – I love discovering new CSS capabilities and want to spread the word before they become mainstream.
-- **Document My Journey** – Writing forces clarity. By documenting experiments and reflections, I solidify my own learning while giving you a resource.
-- **Build Community** – Whether you’re a seasoned dev or just starting out, I hope these posts spark conversations, questions, and collaborations.
+If I spent money on a course, a tool, or a subscription, you'll hear what I got back for it. Time invested measured against skills gained. Instruction quality compared to free official documentation. Pricing tiers listed next to what each level actually delivers. If something disappointed me, I'll name exactly where expectations diverged from reality. Same applies when something surprises me in a good way.
 
----
+### Workshop Notes, Both Sides of the Room
 
-## A Quick Peek Ahead
+Teaching forces you to articulate things you stopped noticing through daily repetition. Running sessions exposed assumptions I didn't realize I carried until trying to explain them aloud. Attending others' workshops revealed pacing problems and material gaps I vowed to avoid in my own. Post-session notes here capture what worked, what confused participants, and which topics need restructuring before the next iteration.
 
-- **CSS Scroll‑Driven Animations** – Exploring the `scroll-timeline` and `view-timeline` APIs to create smooth, performant animations that react to scrolling.
-- **CSS View Transitions** – Demonstrating the new view‑transition API for seamless page‑to‑page animations without JavaScript.
-- **Studying at CTU Training Solutions** – A candid look at my time learning web and graphic design there, where the promised quality often fell short of expectations.
-- **Work Experience at INKFISH** – Reflecting on real‑world projects, challenges, and successes from my time at a digital agency.
+### Learning Curves and Reality Checks
 
----
+Beyond the tutorials, I'll be sharing candid reflections on my professional journey. This includes an analysis of the gap between formal training expectations and the messy reality of entry-level work—how structured learning environments sometimes struggle to keep pace with rapidly evolving web standards, leaving graduates to bridge those gaps through immediate self-study. I'll also reflect on early agency experiences, covering the friction between creative freedom and strict deadline constraints, how real-world client feedback reshaped my approach to accessibility, and the valuable lessons learned from debugging production issues under pressure.
 
-Thank you for stopping by! I’m excited to fill these pages with code, insights, and stories. Bookmark this site, subscribe if you’d like, and let’s explore the ever‑evolving world of front‑end development together.
+## Why Bother Publishing
+
+### Public Accountability Forces Precision
+
+Private notebooks skip the exceptions that matter. When I write down an explanation of how cascade layers resolve conflicts, someone reading might try the exact technique tomorrow and report back when browser A behaves differently than browser B. That feedback loop improves accuracy faster than solitary study ever could. Missing edge cases surface through community testing rather than remaining hidden in local documentation only I access.
+
+### Writing Surfaces Blind Spots
+
+I recently assumed everyone understood stacking contexts the way I do until attempting to explain it for a tutorial. The resulting confusion forced me to research six edge cases I had never encountered during regular work. The post served four other developers who faced identical misunderstandings. Without publishing, that knowledge would have stayed trapped inside a single afternoon of frustration. Documentation reveals gaps in understanding before they become costly production errors.
+
+### Documenting Skill Growth Creates Evidence
+
+Five years from now, hiring managers reviewing applications need more than bullet points on a resume listing technologies I know. Showing completed work with timestamps creates a chronological record of capability that interviews alone cannot replicate. Linking to a detailed migration story demonstrates communication ability alongside technical competency. This becomes evidence rather than assertion when negotiating salary or seniority levels.
+
+### Community Emerges Around Shared Struggles
+
+Comments arrive regularly from developers working on similar challenges in different cities. One reader pointed out a security vulnerability in my form validation example that I had overlooked completely. Another contributor suggested a performance optimization using native lazy loading that reduced bundle size by forty percent. None of these improvements happened in isolation. They emerged because someone felt comfortable challenging an assumption publicly. Collaboration produces better code than solo effort over time.
+
+### Early Coverage Accelerates Adoption Timelines
+
+Container queries shipped in major browsers twelve months before most companies adopted them in production. During that window, documentation remained thin outside specification drafts. Early coverage helped teams evaluate adoption risk while vendors continued refining implementation details. Waiting for conference talks and vendor blogs to catch up leaves practitioners without resources when they need evaluation data most. Contributing to documentation pipelines helps industry move forward faster than waiting passes.
+
+### Personal Archives Prevent Relearning Mistakes
+
+Sixteen months later, I frequently revisit past work to recall why I chose a particular architecture for a navigation component. Those notes exist because I documented them during the initial effort, not because memory alone proved reliable enough for long-term retention. Search engines forget indexed content constantly. Having a private archive means finding past solutions quickly instead of rebuilding everything from scratch based on recollection. Time saved searching compounds across hundreds of future decisions.
+
+## What's Coming Next
+
+These are the projects currently sitting at the top of my queue. Sequencing may shift depending on bug discoveries, specification updates, or audience feedback signaling urgency.
+
+### Scroll-Driven Animations Deep Dive
+
+JavaScript scroll handlers trigger on every frame calculation. Native APIs bypass the main thread entirely. The difference shows clearly in Lighthouse audits running on mid-range Android hardware.
+
+- Build parallax header effects using scroll-timeline linked to position: sticky elements. Polyfill guidance included for Safari users whose version predates March 2023 support.
+- Side-by-side Chrome DevTools recordings showing FPS stability across 500px vertical scrolls. Compare callback-based implementations against declarative CSS timing. Measured results display in tables within each post rather than vague descriptions.
+- Animation cancellation patterns when users interact with scrolling touchpads versus mouse wheels. Smooth playback breaks if input handling lacks proper cleanup logic.
+
+### View Transitions API Series
+
+Single-page applications traditionally reroute client-side, injecting artificial delays even when actual DOM changes complete instantly. Browser-native view transitions eliminate routing framework overhead for visual continuity.
+
+- Multi-page HTML site with morphing animations between route changes. Links navigate normally but triggers cross-document state management automatically. Total JavaScript payload stays under fifteen kilobytes gzipped.
+- Measure Time to Interactive metrics against equivalent React Router configuration using same host server and asset compression settings. Framework bundler output sizes logged before and after tree-shaking optimizations applied manually.
+- Motion preference respect requires media query checks wrapped around transition hooks. Users opting out via system settings expect instant navigation without delay penalties affecting assistive technology compatibility.
+
+### Container Queries Migration Guide
+
+Responsive design shifted from viewport-first thinking to component-responsiveness once specs stabilized. Media queries still handle layout shifts at page scale, but inner components now carry their own adaptability rules independent of global breakpoint arrays.
+
+- Take an existing three-column card deck relying exclusively on percentage widths calculated for desktop screens. Refactor using container-type definitions, then document how many lines of code decreased while functional flexibility increased proportionally.
+- Older browsers ignore unknown property values gracefully, enabling progressive enhancement paths. Explicit @supports blocks wrap advanced declarations so default styles render acceptably where feature detection fails silently.
+- Readable container class naming schemes preventing confusion between viewport-relative classes and parent-relative containers sharing identical prefix terminology. Clarity reduces maintenance burden across large codebases spanning multiple contributors.
+
+### General Site Quality Audits
+
+Speed and usability form the foundation of any successful web presence. These audits examine real sites across multiple dimensions—performance, accessibility, optimization, and best practices—with actionable fixes you can apply immediately to your own work.
+
+- **Load Time Benchmarks:** Lighthouse and WebPageTest runs from multiple regions. First-contentful paint, time-to-interactive, and cumulative layout shift tracked across 3G, 4G, and broadband.
+- **Image Optimization:** Oversized assets flagged. JPEGs converted to WebP/AVIF with quality thresholds between seventy and eighty-five percent. Responsive srcset attributes added where missing.
+- **Caching Strategy:** HTTP headers inspected for missed opportunities. Versioned asset URLs checked for aggressive caching. Service Worker fallback paths configured where beneficial.
+- **Accessibility Compliance:**  axe-core scans paired with manual keyboard navigation tests. Failures mapped to WCAG 2.1 success levels. Contrast ratios below 4.5:1, missing form labels, and absent focus indicators prioritized.
+- **Core Web Vitals:** Largest Contentful Paint kept under 2.5 seconds. First Input Delay measured against 100ms thresholds. Cumulative Layout Shift validated within 0.1 boundaries.
+- **Third-Party Script Impact:**  External dependencies catalogued. Analytics trackers, ad pixels, and font loaders measured against payload contributions. Deferred loading recommended where scripts block rendering.
+
+## Stick Around
+
+### Where Conversations Happen
+
+GitHub repositories linked at the bottom of tutorial posts accept issues and pull requests directly. Found a typo in the markup? Open a PR. Discovered a bug in the demo code? File an issue with reproduction steps. Better yet, fork the repo, fix it, and submit the patch. Contributor names appear in release notes for every repository update.
+
+### What I Ask From You
+
+Questions matter more than compliments. If something I wrote saved you thirty minutes debugging a flexbox issue, tell me which part worked so I can apply that clarity elsewhere. If I got something wrong, tell me faster. Corrections receive pinned acknowledgment at the top of affected posts with credit linking back to whoever spotted the problem. Ego matters less than accuracy here.
+
+Counterarguments welcome. If you disagree with my stance on zero-build tooling or my critique of dependency-heavy frameworks, write your response. Link back to my original post. I read every trackback and pingback that arrives. Productive disagreement advances understanding for everyone reading both perspectives.
+
+### What You Won't Find Here
+
+No affiliate links disguised as recommendations. No sponsored content masking itself as honest reviews. No newsletter upsells gating free content behind paywalls. Everything published here stays accessible without accounts, cookies tracking your reading habits, or JavaScript required to render the page itself.
+
+If that approach sounds like your kind of corner on the internet, then welcome aboard. Pull up a chair. The code editor stays open.
 
 *Happy coding,*  
-**Stefan le Roux**
+**Stefan le Roux**
