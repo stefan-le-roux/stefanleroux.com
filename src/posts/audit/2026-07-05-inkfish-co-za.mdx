@@ -1,6 +1,6 @@
 ---
-title: "inkfish.co.za Downgrade Report (Coming Soon)"
-description: "Why This Agency's Own Site Should Raise Red Flags"
+title: "Website Audit Report: INKFISH (inkfish.co.za)"
+description: "Public-facing website infrastructure, accessibility compliance, legal documentation, organisational credibility assessment"
 slug: "inkfish-downgrade"
 pubDate: 2026-07-05
 author: "Stefan le Roux"
@@ -8,8 +8,333 @@ image: "../../assets/images/inkfish.webp"
 alt: "The Astro logo on a dark background with a pink glow."
 status: visible
 ---
-import Soon from "../../blocks/soon.astro"
 
-> "This assessment reflects observable conditions during review period. Conclusions derive solely from publicly accessible site elements and third-party tool outputs. Recommendations represent professional judgment based on documented metrics."
+## Executive Summary
 
-<Soon/>
+INKFISH presents themselves as a digital marketing agency specialising in website development, design work, and hosting services. This audit examines their public-facing website from technical, accessibility, legal, and business credibility perspectives. The findings reveal fundamental issues across multiple categories that directly contradict the services they offer to clients.
+
+## 1. Organisational Stability
+
+### Workforce Turnover Crisis
+
+At the beginning of 2026, INKFISH experienced mass resignations affecting over half their workforce. Industry patterns indicate such turnover typically stems from management practices including unpaid overtime expectations, inadequate compensation structures, and poor communication channels.
+
+When employees publicly challenged these practices, the situation escalated to intimidation tactics and false accusations from leadership. This pattern of behavior forced the company to recruit replacement staff during an active crisis period.
+
+### Impact on Service Quality
+
+High employee turnover directly correlates with project continuity issues. Clients experience:
+
+- Mid-project team changes
+- Lost institutional knowledge
+- Extended delivery timelines
+- Inconsistent quality standards
+
+The timing of their website rebuild coincides with this workforce instability. Organisations rebuilding their digital presence during leadership crises typically prioritise speed over quality control.
+
+## 2. Technical Analysis
+
+### Technology Stack
+
+| Component | Implementation | Notes                                                 |
+| --------- | -------------- | ----------------------------------------------------- |
+| CMS       | WordPress      | Popular choice with extensive plugin ecosystem        |
+| Theme     | Flatsome       | Multi-purpose theme with built-in popup functionality |
+| Forms     | Gravity Forms  | Premium form builder with validation capabilities     |
+
+### Popup System Deep Dive
+
+Analysing the provided popup.html code reveals multiple implementation failures:
+
+#### 1. Excessive Z-Index Values
+
+```css
+#inkfish-card,
+#inkfish-form-card {
+	z-index: 999999;
+}
+```
+
+The value `999999` serves no functional purpose compared to reasonable values like `9999` or `10000`. Browser z-index limits span from `-2147483648` to `+2147483647` (signed 32-bit integers). Arbitrary high values indicate developers bypassing systematic stacking context planning rather than working with CSS architecture.
+
+#### 2. Critical !important Overuse
+
+The stylesheet contains 28 instances of `!important` declarations including:
+
+```css
+#inkfish-card h2 {
+	font-weight: 700 !important;
+	font-size: clamp(1.1rem, 4.5vw, 1.4rem) !important;
+	color: #fff !important;
+	margin: 0 0 10px !important;
+	line-height: 1.25 !important;
+}
+```
+
+This pattern prevents any future CSS specificity resolution without additional `!important` rules. Maintaining this stylesheet requires escalating specificity battles indefinitely. Professional implementations reserve `!important` for utility classes or emergency overrides, never as primary styling strategy.
+
+#### 3. Performance-Intensive Effects
+
+```
+background: rgba(20, 35, 90, 0.88);
+backdrop-filter: blur(20px);
+-webkit-backdrop-filter: blur(20px);
+```
+
+The `blur()` function triggers GPU-intensive rendering operations. On mobile devices, this causes:
+
+- Increased battery consumption
+- Frame rate drops during scrolling
+- Thermal throttling on sustained interaction
+
+More concerning: the main site uses solid vibrant colors while this popup employs blurred transparent backgrounds and glows. The visual inconsistency suggests disconnected design systems, possibly AI-generated assets patched together without cohesive review.
+
+#### 4. JavaScript Anti-Patterns
+
+```js
+onclick = "inkfishFormOpen(); return false;";
+```
+
+Inline event handlers violate separation of concerns principles. Modern implementations attach listeners via addEventListener during DOM ready state.
+
+The timeout-based popup trigger lacks user control:
+
+```js
+setTimeout(function () {
+	var c = document.getElementById("inkfish-card");
+	if (c) {
+		c.classList.remove("ip-hide");
+		sessionStorage.setItem(KEY, "1");
+	}
+}, 2500);
+```
+
+Users who close the popup before 2.5 seconds still encounter it again during the same browsing session due to improper dismissal tracking logic.
+
+#### 5. Missing Accessibility Attributes
+
+While close buttons include `aria-label`, the form lacks:
+
+- Focus trapping when modal opens
+- Escape key handling
+- Screen reader announcements for dynamic content changes
+- `role="dialog"` attributes
+
+Gravity Forms injected into this container inherits these gaps despite the plugin's native accessibility features.
+
+### Stacking Context Catastrophe
+
+The z-index mismanagement creates cascading failures throughout the site:
+
+#### Issue Chain:
+
+- Tilting Text Sections use transforms creating new stacking contexts with elevated z-index values
+- Popup Form at z-index 999999 still renders behind these transformed elements
+- Navigation Bar receives artificially inflated z-index to sit above tilting sections
+- Mobile Menu becomes blocked by navigation bar since hamburger click targets remain underneath
+- Fixed Elements (reCAPTCHA badge, popup trigger button) experience intermittent obscuration
+
+#### Root Cause
+
+Developers failed to implement `isolation: isolate` on component boundaries. This CSS property creates independent stacking contexts without requiring extreme z-index values. The absence forces manual ordering calculations that break with any content addition.
+
+#### Maintenance Implications
+
+Any team member adding new components must audit the entire stylesheet for conflicting z-index declarations. New sections require incrementally higher values, accelerating toward browser limits. Eventually, overflow occurs and elements render incorrectly regardless of declared priority.
+
+### Cross-Browser Compatibility Issues
+
+#### Flip Card Implementation
+
+Service showcase cards use CSS 3D transforms for hover/tap animation effects.
+
+**Chromium Behavior:** Cards flip cleanly revealing backface content.
+
+**Non-Chromium Browsers:** Front content remains visible through the back face due to incorrect `backface-visibility: hidden` declarations. Visible symptoms include:
+
+- Gradient overlays persisting on backface
+- Text from front layer overlapping reversed content
+- Reduced legibility during animation states
+
+#### Duplicate Inline Styles
+
+Each flip card generates identical `<style>` tags embedded directly in HTML:
+
+```css
+<style>
+/* Repeated CSS block for every card instance */
+</style>
+```
+
+This pattern wastes bandwidth, prevents caching efficiency, and indicates automated generation without post-processing optimisation. External stylesheets handle repeating patterns far more effectively.
+
+#### Animation Without User Control
+
+The site implements animations violating WCAG 2.1 Success Criterion 2.3.3 (Animation from Interactions). No `prefers-reduced-motion` media query detects user OS preferences. Users with vestibular disorders, epilepsy, or motion sensitivities receive no opt-out mechanism.
+
+#### Color Contrast Failures
+
+Blog links use light pink text (#ffcccc range) on white backgrounds. Calculated contrast ratio falls below 3:1, failing AA requirements for normal text. Assistive technology users cannot reliably distinguish interactive elements from static content.
+
+#### Search Button Malformation
+
+The sidebar search feature displays mismatched sizing:
+
+- "Search" label text overflows button boundaries
+- Button height exceeds adjacent input field dimensions
+- Click target areas create inconsistent user experience
+
+These alignment issues suggest rapid prototyping without design system enforcement.
+
+## 3. SEO Destruction Analysis
+
+### URL Structure Changes Without Redirects
+
+Old and new URL mappings:
+
+| Old Path   | New Path       | Status               |
+| ---------- | -------------- | -------------------- |
+| /about/    | /about-us/     | 404 without redirect |
+| /services/ | /our-services/ | 404 without redirect |
+| /insights/ | /blog/         | 404 without redirect |
+| /studies/  | /our-work/     | 404 without redirect |
+
+Google Search Console data shows indexed pages returning 404 errors for several months. Existing backlinks from client websites, directories, and search engine results direct traffic to non-existent pages.
+
+### The noindex Meta Tag Problem
+
+Every page includes this meta declaration:
+
+```html
+<meta name="robots" content="noindex, nofollow" />
+```
+
+**What this does:**
+
+- Tells search engines not to index page content
+- Prevents crawlers from following links on the page
+- Removes pages from search results entirely
+- Stops PageRank flow through outgoing links
+
+WordPress includes a visibility checkbox: **_"Discourage search engines from indexing this site."_** This setting inserts the noindex meta tag globally. INKFISH activated this option during development and failed to disable it before launch.
+
+**Business Impact:**
+
+- Zero organic search traffic from Google, Bing, DuckDuckGo
+- Competitors capture search visibility they would have claimed
+- Potential clients cannot discover services through search
+- Portfolio work remains invisible to inbound prospects
+
+This single configuration error nullifies months of content marketing investment and undermines core business development channels for a digital agency.
+
+**Contradictory Evidence:** Old URLs occasionally appear in search results because those archived versions predate the noindex implementation. However, clicking them delivers 404 errors due to missing redirects, further damaging domain trust metrics.
+
+## 4. Legal Deficiencies
+
+### Cookie Consent Non-Functionality
+
+The site displays cookie acceptance dialog upon initial visit. Testing confirms:
+
+- "Accept" button performs no action
+- "Deny" button performs no action
+- "Save Preferences" button text overflows container boundaries
+
+Complianz plugin installed but misconfigured. Generated cookie policy documents absent from navigation. GDPR Article 7 requires demonstrable consent mechanisms with functional enablement/disablement controls. Non-functional buttons constitute compliance failure under European privacy regulations.
+
+### Google Fonts Tracking
+
+Despite local font hosting options available in Flatsome theme settings, the site loads fonts externally. Google Fonts connections transmit IP addresses to Google servers on every pageview. This constitutes personal data processing requiring explicit consent under GDPR Article 6(1)(a).
+
+For a marketing agency claiming privacy-conscious positioning, this contradicts their stated values.
+
+### Missing Terms and Conditions
+
+No Terms of Service document exists across the website. Client contracts lack governing legal framework specifying:
+
+- Payment terms and late fees
+- Intellectual property ownership transfer conditions
+- Liability limitations and disclaimer scope
+- Dispute resolution procedures
+- Termination clauses
+
+Without enforceable contract templates, the company exposes itself to:
+
+- Scope creep without change order protections
+- Unclear deliverable expectations
+- Limited recourse for payment disputes
+- Vulnerability to client litigation without liability caps
+
+Competitors with professional terms of service gain negotiating advantages during client onboarding.
+
+## 5. Credibility Concerns
+
+### Exploiting Departed Employees
+
+Social media campaigns continue featuring footage of employees who participated in mass resignations. Continuing to leverage their likeness:
+
+- Violates implied consent expectations
+- Risks reputational backlash if discovered by viewers
+- Demonstrates disregard for former staff dignity
+- Creates legal exposure if release forms were not obtained
+
+Potential clients learning this context may question organisational ethics and workplace culture stability. Employee testimonials from departed staff become unreliable indicators of current conditions.
+
+### Service Inconsistency
+
+Flip card animations on homepage display 6 service offerings while the dedicated services page lists only 4. Content generation tools produced inconsistent outputs across pages. Prospective clients encountering contradictory information lose confidence in operational professionalism.
+
+## 6. Summary Findings
+
+### Critical Issues Requiring Immediate Action
+
+| Severity | Issue                                       | Business Risk                   |
+| -------- | ------------------------------------------- | ------------------------------- |
+| Critical | noindex meta tag blocking search visibility | Zero organic discovery          |
+| Critical | Missing 301 redirects from old URLs         | Lost referral traffic           |
+| Critical | Non-functional cookie consent               | GDPR compliance violation       |
+| High     | Z-index stacking failures                   | Broken user interface           |
+| High     | Accessibility violations                    | Legal liability, excluded users |
+| Medium   | Inline style duplication                    | Maintenance burden              |
+| Medium   | Animation without reduced-motion support    | Accessibility exclusion         |
+| Low      | Visual design inconsistencies               | Brand credibility damage        |
+
+### Professional Credibility Assessment
+
+A digital agency offering web auditing services maintains a website exhibiting:
+
+- Fundamental SEO misconfiguration
+- Accessibility violations contradicting modern web standards
+- Technical debt indicating rushed development cycles
+- Legal compliance gaps exposing clients and company to risk
+
+Clients purchasing audits or development services from INKFISH face inherent contradiction between delivered advice versus demonstrated competence. The organisation practices what it warns others against.
+
+## 7. Recommendations
+
+### Immediate Actions (Week 1)
+
+- Remove noindex meta tags from all pages
+- Implement 301 redirects for migrated URLs
+- Fix cookie consent button functionality
+- Create Terms and Conditions document
+
+### Short-Term Fixes (Month 1)
+
+- Consolidate popup z-index to reasonable values
+- Replace `!important` declarations with specificity refactoring
+- Add `prefers-reduced-motion` media queries
+- Fix color contrast ratios meeting WCAG AA
+
+### Long-Term Strategy (Quarter 1)
+
+- Implement systematic stacking context architecture
+- Establish design system enforcing consistency
+- Conduct accessibility audit with third-party validation
+
+## 8. Final Assessment
+
+INKFISH operates with structural contradictions undermining their service proposition. The website audit reveals patterns consistent with development conducted under organisational stress during leadership transition periods.
+
+Prospective clients should evaluate whether these issues reflect temporary circumstances or indicate systemic operational challenges. Due diligence recommends requesting client references, reviewing contract terms thoroughly, and validating deliverable quality before engagement commitments.
+
+The combination of technical debt, compliance gaps, and organisational instability warrants careful consideration before proceeding with service agreements.
