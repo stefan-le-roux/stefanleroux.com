@@ -86,7 +86,7 @@ const { frontmatter, headings } = Astro.props;
 		display: grid;
 		grid:
 			"head head" auto
-			"slot toc" auto / 1fr 300px;
+			"slot toc" auto / 1fr 320px;
 		gap: 2em 1em;
 
 		@media (width <= 1100px) {
@@ -107,7 +107,7 @@ const { frontmatter, headings } = Astro.props;
 
 		img {
 			inline-size: 100%;
-			aspect-ratio: 16 / 9;
+			aspect-ratio: 1.91 / 1;
 			object-fit: cover;
 			border-radius: var(--borderRadius);
 		}
@@ -133,13 +133,23 @@ const { frontmatter, headings } = Astro.props;
 
 	.toc {
 		grid-area: toc;
-		inline-size: min(400px, 100%);
+		inline-size: min(320px, 100%);
 		margin-inline: auto;
 	}
 
 	.content {
-		:is(h2, h3, h4, h5, h6) {
-			scroll-margin-top: calc(1.5lh + 0.5rem);
+		:is(h2, h3, h4, h5, h6, p) {
+			scroll-margin-top: calc(1.5lh - 2rem);
+		}
+
+		a {
+			text-decoration: underline;
+			font-variation-settings: "wght" 600;
+
+			&:hover {
+				text-decoration-style: wavy;
+				text-decoration-thickness: 0.1em;
+			}
 		}
 
 		h2 {
@@ -161,6 +171,37 @@ const { frontmatter, headings } = Astro.props;
 			padding-inline: 0.35em;
 			padding-block: 0.125em;
 			font-size: var(--fs-0);
+
+			pre:has(&) code {
+				display: block;
+				padding-inline: 1em;
+				padding-block: 1em;
+				overflow: auto;
+			}
+		}
+
+		table {
+			border-collapse: collapse;
+			border: var(--buttonBorder);
+			font-size: var(--fs-0);
+			inline-size: 100%;
+
+			.wrapper:has(> &) {
+				overflow-x: auto;
+			}
+
+			th {
+				background: black;
+				font-variation-settings: "wght" 700;
+				text-align: start;
+			}
+			tbody tr:nth-child(odd) {
+				background: var(--buttonColor);
+			}
+			td,
+			th {
+				padding: 0.5em;
+			}
 		}
 
 		hr {
