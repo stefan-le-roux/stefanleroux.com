@@ -197,11 +197,19 @@ const image = "../assets/images/favicon.svg";
 	}
 
 	article {
-		padding: 1em;
 		block-size: 100%;
 		display: flex;
 		flex-flow: column;
-		gap: 1.75rem;
+		gap: 2rem;
+
+		& > *:not(img) {
+			margin-inline: 2rem;
+		}
+
+		&::after {
+			margin-inline: 2rem;
+			margin-block-end: 2rem;
+		}
 
 		h2 {
 			font-size: var(--fs-1);
@@ -221,10 +229,9 @@ const image = "../assets/images/favicon.svg";
 		}
 
 		img {
-			inline-size: 100%;
-			aspect-ratio: 16 / 10;
+			aspect-ratio: 1.91 / 1;
 			object-fit: cover;
-			border-radius: var(--borderRadius);
+			border-radius: var(--borderRadius) var(--borderRadius) 0 0;
 			transition: scale 0.2s var(--easing);
 			transform-origin: 50% 100%;
 		}
