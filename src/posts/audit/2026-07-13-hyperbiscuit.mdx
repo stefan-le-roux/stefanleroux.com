@@ -1,0 +1,1108 @@
+---
+title: "How HyperBiscuit Surveys Students Without Consent"
+description: "Silent tracking on South African university sites. Captures device fingerprints, GPS, form data and behaviour; without consent or clear privacy/cookie policies; analyzed under POPIA and GDPR, with protection steps."
+slug: "hyperbiscuit-audit"
+pubDate: 2026-07-13
+author: "Stefan le Roux"
+image: "../../assets/images/hyperbiscuit.png"
+alt: "HyperBiscuit spying"
+status: visible
+---
+
+import Link from "../../blocks/link.astro";
+
+## Executive Summary
+
+This article documents the tracking mechanisms embedded in a JavaScript payload served from the domain `d.hs.uy` by a Pretoria-based company called HyperBiscuit. The script runs silently on websites operated by South African tertiary education institutions. It captures device fingerprints, GPS coordinates, form field values, cross-site browsing histories, and behavioral telemetry.
+
+The company publishes no privacy policy, terms of service, or cookie policy. The script integrates with no consent management platform. It fires before any user interaction occurs. The institutions that deploy this script receive applications containing South African ID numbers, bank statements, academic transcripts, and proof of residence documents.
+
+South Africa's Protection of Personal Information Act (POPIA, Act 4 of 2013) and the EU General Data Protection Regulation (GDPR, Regulation 2016/679) establish specific requirements for lawful processing. The deployment of this tracking script violates multiple conditions under both frameworks. This analysis provides the technical documentation, legal framework violations, and actionable steps for individual users to protect themselves.
+
+## 1. Who Is HyperBiscuit
+
+### Company Profile
+
+HyperBiscuit operates from Botlhale Village, 179 Dyer Road, Harrier Place, Hillcrest, Pretoria 0083, South Africa. The company maintains a website at hyperbiscuit.com describing itself as a marketing analytics platform. Their own homepage advertises these capabilities:
+
+- Customizable reporting dashboard with data block configuration
+- Traffic source tracking across social, email, search, and radio campaigns
+- Geolocation drilling to suburb level precision
+- Device fingerprinting that tracks users across multiple sites
+- Multi-campaign tracking with centralized shortlink hub
+- CRM and SEO integrations
+
+Additional products listed on their homepage include Hyper-Radio for radio ad performance tracking, Hyper Pigeon for email campaign management, and Hyper Shortener for URL management.
+
+### Direct Marketing to Educational Institutions
+
+A blog post on hyperbiscuit.com titled "Leveraging Marketing Analytics in Tertiary Education: A Comprehensive Guide" explicitly targets universities and colleges. The article describes how institutions can:
+
+- Evaluate marketing efforts using website analytics, social media platforms, and student interactions
+- Understand prospective student behavior through analytics
+- Track student journeys from first visit to conversion
+- Optimize enrollment processes with real-time dashboards
+- Segment audiences based on demographics, interests, and behavior
+
+The guide recommends using analytics to "enhance student engagement" and "create targeted campaigns" that improve enrollment outcomes.
+
+### The Internship Program and Data Exposure
+
+The competition page on hyperbiscuit.com invites marketing students to participate in a paid internship challenge. Applicants receive access to the analytics platform hosting "real-world campaign data and user insights." Students must complete a two-part challenge identifying strengths, weaknesses, opportunities, and threats while making recommendations to improve marketing strategy.
+
+This arrangement means HyperBiscuit grants third-party interns access to behavioral data collected from actual website visitors. The data originates from sites where users may submit identity documents, financial records, and academic credentials.
+
+### Missing Legal Documentation
+
+Verification attempts to access legal pages on hyperbiscuit.com returned HTTP 404 errors:
+
+URL Status
+
+- `/privacy-policy	HTTP 404` - Not Found
+- `/terms-of-service	HTTP 404` - Not Found
+- `/cookie-police	HTTP 404` - Not Found
+
+The homepage contains no footer links to legal documents. No page references data processing agreements, retention schedules, data subject rights procedures, security certifications, or sub-processor disclosures. The blog posts contain no disclaimers about data collection practices or user rights.
+
+## 2. Deep Dive Into the Tracking
+
+### Script Architecture Overview
+
+The uploaded file is a single minified JavaScript IIFE (Immediately Invoked Function Expression). The invocation passes six global references:
+
+- `l` equals window
+- `s` equals document
+- `a` equals navigator
+- `o` equals history
+- `i` equals performance or polyfills
+- `h` equals undefined
+
+The script executes across five functional categories. Each runs silently without visual indicators.
+
+### Category One: Device Fingerprinting
+
+The script creates a `<canvas>` element using `document.createElement("canvas")` and obtains a 2D rendering context. It draws the string `CANVAS_HOWDYXYZ` using two overlapping passes:
+
+#### First pass configuration:
+
+- Fill style set to `#069` (dark blue)
+- Coordinates: `(2, 15)`
+- Font: `14px 'Arial'`
+- Text baseline: `alphabetic`
+
+#### Second pass configuration:
+
+- Fill style set to `rgba(102, 204, 0, 0.7)` (semi-transparent green)
+- Coordinates: `(4, 17)` overlapping the first pass
+
+A background rectangle is painted first using `fillRect(125, 1, 62, 20)` with `fillStyle = "#f60"` (orange). The overlapping text and rectangle produce pixel-level variations differing between browsers, GPU drivers, operating systems, and font rendering engines.
+
+Two hash values are computed:
+
+- Hash one derives from `t.toDataURL()`. The output converts to a character array, each character masks to 8 bits, then feeds through the `ct()` function with seed value `1337`.
+
+- Hash two derives from `e.getImageData(0, 0, 188, 22).data`, the raw pixel data fed through the same `ct()` function with seed `1337`.
+
+The `ct()` function implements a MurmurHash3 x86 32-bit variant. Input processes in 4-byte chunks applying constants `3432918353` and `461845907` as multiplication factors with 15-bit and 17-bit rotations. Finalization uses avalanche constants `2246822507` and `3266489909`. These two hashes produce stable device identifiers persisting across sessions, surviving cookie clearing, and resisting incognito mode because they depend on rendering engine properties rather than stored state.
+
+Beyond canvas fingerprinting, the script collects these properties:
+
+- `navigator.hardwareConcurrency` (CPU thread count)
+- `navigator.deviceMemory` transformed via `Math.floor(Math.log2(deviceMemory)) + 3`
+- `navigator.language`
+- `Intl.DateTimeFormat().resolvedOptions().timeZone` (IANA timezone string)
+- `navigator.webdriver` for automation detection
+- `navigator.pdfViewerEnabled` for PDF viewer presence
+- `navigator.usb.getDevices` for WebUSB availability
+- Presence of `InstallTrigger` indicating Firefox
+- `window.opr` or `window.opera` indicating Opera
+- Safari detection via `!/[constructor/i.test(window.HTMLElement)`
+- `document.documentMode` for Internet Explorer or legacy Edge
+- `window.StyleMedia` for legacy Edge
+  -` window.chrome` or `window.webkitRTCPeerConnection` for Chrome
+- Fetch API support checking `fetch` in `window && "Request"` in `window`
+- Beacon API support
+- `window.top !== window.self` for iframe context detection
+
+These capabilities pack into a single integer bitfield. Each detection adds a power-of-two value: 1 for webdriver, 2 for PDF viewer, 4 for USB, 8 for geolocation, 16 for Firefox, 32 for Opera, 64 for Safari, 128 for IE, 256 for legacy Edge, 512 for Chrome, 1024 for fetch, 2048 for beacon, 4096 for iframe context. The final bitfield value uniquely identifies the browser-environment combination.
+
+### Category Two: Geolocation Tracking
+
+The script invokes `navigator.geolocation.getCurrentPosition()` with the configuration object `{enableHighAccuracy: true}` requesting GPS-level precision. When the initial request fails, the script retries without high accuracy after setting an `nha` ("no high accuracy") flag in `localStorage`.
+
+Coordinates cache in `localStorage` under the key `hb_data` with `time-to-live` values: `30 minutes` (1800000 milliseconds) for high-accuracy fixes, `180 minutes` (3000000 milliseconds) for low-accuracy ones. Fresh coordinate retrieval triggers a `M("l", {lat, lng})` event sent to the endpoint `https://d.hs.uy/i`.
+
+Geolocation requests occur on script load without user notification or consent dialogs. The code checks for `geolocation` in `navigator` but proceeds regardless of the user's location permission status. When permission is granted, exact latitude and longitude transmit to the server. When denied, the failure code does not stop the tracking infrastructure from logging the attempt.
+
+The script also reads `navigator.geolocation.watchPosition` availability, storing the feature flag in the capability bitfield for future correlation analysis.
+
+### Category Three: Form Field Capture
+
+This component presents the greatest privacy concern. The script attaches a `submit` event listener at the document level using capture phase: `s.addEventListener("submit", V, {capture: true})`.
+
+The handler iterates every element inside the submitted form. For fields excluding `type="file"`, `type="submit"`, and `type="hidden"`, the script pushes objects containing:
+
+- Field ID or name (`i.id || i.name`)
+- Associated label text fetched via `document.querySelector('label[for="' + i.id + '"]')`
+- Placeholder text from `i.placeholder`
+- The field's current value via `i.value + ""`
+
+This payload transmits immediately to `d.hs.uy` using the third boolean argument true bypassing the 1-second batching delay. For forms with IDs starting with gform (Gravity Forms, common on WordPress sites used by South African universities), the script wraps `onsubmit` handlers to intercept jQuery-managed submissions as well.
+
+Forms embedding this script on university application pages include input fields for:
+
+- South African ID number
+- Full name
+- Date of birth
+- Contact telephone numbers
+- Email addresses
+- Banks and account numbers for fee payments
+- Academic institution history
+- Previous qualifications
+- Proof of residence addresses
+- Parent or guardian contact information
+
+All field values transmit to the third-party analytics server before the form reaches the institution's own backend systems.
+
+### Category Four: Cross-Site Session Linkage
+
+Three identifiers maintain state:
+
+1. `hb_dev`: Persistent device ID stored in `localStorage` and as a `cookie` with `SameSite=None; Secure; Max-Age=31536000`
+2. `hb_ses`: Session ID stored in `sessionStorage`
+3. `hb_view`: Per-page-load view ID regenerated on each navigation
+
+On new device or session detection (internal flags `D` and `H`), the script injects a hidden iframe pointing to `https://d.hs.uy/e.html` with device, session, and view IDs appended as query parameters. This iframe establishes cross-domain state on the analytics server.
+
+HyperBiscuit's homepage confirms this capability: "device fingerprinting tracks users across sites, giving you a complete view of their journey." The cross-site linkage allows reconstruction of browsing paths across multiple educational institution websites, creating aggregated profiles showing which schools a user visited, how long they stayed, and what content they accessed.
+
+### Category Five: Behavioral Telemetry
+
+The script records these events:
+
+- Page load timing via `performance.getEntriesByType("navigation")` capturing `domInteractive` and full load duration
+- First user interaction (pointer move, pointer down, key down, or scroll), captured once via passive listeners then removed to minimize overhead
+- Page visibility changes when tabs switch or windows minimize, logged as `h` for hide and `s` for show
+- Navigation events by monkey-patching `history.pushState` and `history.replaceState` to call the tracking function on every single-page-application route change
+- Cookie consent events if the site configures the optional notice
+- Error logs via `window.hbWebRecord` if the web recorder library loads
+
+The script also loads `rp.js` from the same domain `d.hs.uy`. This auxiliary script enables session recording via the `hbWebRecord` library. Session recording captures DOM mutations as replayable events, allowing analysts to reconstruct mouse movements, typing patterns, scrolling behavior, and form interactions in near-real-time playback.
+
+### Transmission Mechanics
+
+Data sends to `https://d.hs.uy/i` via `POST` requests. The script checks for `XMLHttpRequest` support and `fetch` API availability. If fetch succeeds, the script uses it with `keepalive` enabled for background requests that survive page unload. Otherwise, it falls back to `XMLHttpRequest`.
+
+Payload compression activates when data exceeds 1024 bytes. The script checks for `window.pako` (a zlib compression library) and compresses using deflate with compression level 3. Compressed payloads send with `Content-Type: application/bin`; uncompressed payloads send with `Content-Type: application/json`.
+
+The endpoint URL `https://d.hs.uy/i` appears nowhere in public documentation. The domain `hs.uy` resolves in South Africa but bears no obvious connection to "HyperBiscuit" or "marketing analytics" in WHOIS records accessible via public lookup services.
+
+## 3. Obfuscation & Transparency
+
+### Minification as Normal Practice
+
+JavaScript minification reduces file sizes, improves load times, and makes reverse engineering more difficult. Industry-standard tools like UglifyJS, Terser, and Google Closure Compiler perform similar transformations. Minification itself does not indicate malicious intent.
+
+This script exceeds standard minification norms through three additional techniques.
+
+### First: Opaque Domain Naming
+
+The endpoint domain `d.hs.uy` bears no semantic connection to HyperBiscuit. Compare this to competing analytics platforms:
+
+- Google Analytics uses `google-analytics.com` and `googletagmanager.com`
+- Matomo uses `matomo.cloud` or self-hosted domains containing `matomo`
+- Hotjar uses `hotjar.com` and `hotjar.eu`
+- Adobe Analytics uses `omtr.net` or `adobe.io`
+
+The domain `hs.uy` does not appear on the company's public website, in their blog posts, or in any marketing material. Users inspecting network requests would see traffic to an unrelated domain without immediate context connecting it to the analytics provider.
+
+### Second: Generic Variable Naming
+
+The script uses single-letter variable names throughout:
+
+- `l` for window
+- `s` for document
+- `a` for navigator
+- `V` for form submission handler
+- `M` for event queue manager
+- `N` for navigation tracker
+- `C` for batch sender
+
+These names provide no semantic information about function purposes. Developers auditing the script must parse the control flow to understand what each section does. Contrast this with readable analytics implementations where functions bear names like `trackFormSubmission`, `captureCanvasFingerprint`, or `requestGeolocation`.
+
+### Third: Conditional Feature Gating
+
+Critical features activate only when configuration flags are set. The cookie notice requires the `S.enabled` flag. Geolocation tracking checks the `g.loc` configuration. The cross-domain iframe loads only when `D || H` evaluates true (device or session mismatch detected).
+
+A site administrator reviewing the script in isolation sees these conditional branches without knowing what external inputs control them. The configuration appears embedded in the fourth base64 segment decoded on initialization, but decoding and interpreting this segment requires specialized knowledge.
+
+### Fourth: Absence of Consent Integration
+
+Modern consent management platforms (CMPs) expose standardized APIs. The script does not check for:
+
+- `window.__tcfapi` (IAB Transparency and Consent Framework)
+- `window._sp_` (OneTrust)
+- `window.ucCmp` (Usercentrics)
+- `window.didomi` (Didomi)
+- `navigator.globalPrivacyControl` (Global Privacy Control signal)
+
+The script does not pause execution until consent is obtained. The script does not skip data collection if a user declines consent. The script executes unconditionally on load, regardless of external consent states.
+
+### Fifth: Self-Contained Cookie Notice Lacks Specificity
+
+When configured, the script generates its own cookie notice HTML. The default message reads: **_"We use cookies to ensure that we give you the best experience on our website. If you continue to use this site we will assume that we will be happy with it."_**
+
+This notice omits these required elements:
+
+- Specific cookie names and durations
+- Purposes for each cookie category
+- Third-party recipients of data
+- Data retention periods
+- User rights and how to exercise them
+- Links to privacy policies
+- Distinct accept and reject buttons
+
+The notice provides only one button: _"Okay, thanks."_ **No reject option exists.** Declining becomes impossible within the interface itself.
+
+## 4. Deployment in Education
+
+### Institutions Using This Script
+
+Multiple sources confirm HyperBiscuit targets tertiary education. The blog post "Leveraging Marketing Analytics in Tertiary Education" explicitly discusses:
+
+- Tracking prospective student engagement metrics
+- Evaluating recruitment marketing campaigns
+- Optimizing enrollment-related content
+- Measuring social media, email, and radio ad performance
+- Understanding student behavior through analytics
+- Creating targeted marketing campaigns based on demographics and interests
+
+While I could not verify specific institutional deployments without live inspection, the marketing materials confirm intentional targeting of the education sector.
+
+### Types of Forms Hosting This Tracking
+
+Tertiary education application forms include fields for sensitive personal information:
+
+- Identity documents: South African ID numbers, passport numbers, foreign national numbers
+- Financial records: Bank account numbers, proof of income, scholarship application forms, bursary requests
+- Academic history: Matriculation certificates, previous institution transcripts, qualification codes, grade averages
+- Residential information: Physical addresses, proof of residence, utility bills, landlord contacts
+- Medical information: Disability declarations, medical aid numbers, special accommodation requirements
+- Guardian information: Parent or guardian names, contact details, employment status
+- Communication preferences: SMS opt-ins, email subscriptions, marketing consent checkboxes
+
+The script captures all these values on form submission. The data transmits to `d.hs.uy` before reaching the institution's backend. The institution's own servers receive a subset of the same data, but the analytics server retains the full original payload.
+
+### Knowledge Gap Scenarios
+
+Two plausible scenarios explain institutional deployment of this script.
+
+- Scenario one involves informed adoption. The marketing department purchased HyperBiscuit's platform and integrated the tracking script across all public-facing websites. They understood the data collection capabilities because they read the product documentation. They accepted the tradeoff between marketing insights and privacy risks.
+
+- Scenario two involves uninformed adoption. A junior developer, marketing contractor, or third-party agency embedded the script without fully understanding its capabilities. They saw "analytics" and "tracking" described as measuring campaign performance. They assumed the script counted page views and referral sources. They did not realize the script also captured form field values and transmitted them to a third-party server.
+
+Both scenarios violate POPIA. Scenario one reflects conscious non-compliance. Scenario two reflects negligent non-compliance. Neither scenario excuses liability from the institution.
+
+## 5. POPIA Legal Analysis
+
+### Overview of the Act
+
+The Protection of Personal Information Act (Act 4 of 2013) came into full operation on 1 July 2021. The Act regulates processing of personal information by public and private bodies operating in South Africa. POPIA establishes eight conditions for lawful processing, creates the Information Regulator as supervisory authority, and sets enforcement mechanisms.
+
+The Act applies regardless of where the responsible party maintains headquarters. Processing personal information "in the Republic" brings the activity under POPIA jurisdiction.
+
+### Condition One: Accountability
+
+Section 1 defines the "responsible party" as the public or private body determining purpose and means of processing personal information. The "operator" processes data on behalf of the responsible party.
+
+The institution embedding the script qualifies as the responsible party. HyperBiscuit qualifies as the operator. POPIA Section 20 requires operators to process information only with the responsible party's knowledge and authorization and to maintain confidentiality.
+
+Accountability means the responsible party remains liable for operator actions. The institution cannot claim exemption by asserting ignorance of the script's capabilities. The institution bears responsibility for verifying third-party data practices.
+
+### Condition Two: Processing Limitation
+
+Section 11 enumerates lawful processing grounds. Personal information may be processed only when:
+
+- The data subject provides voluntary, express, and informed consent, OR
+- Processing is necessary for concluding or performing a contract, OR
+- Processing complies with a legal obligation, OR
+- Processing protects the data subject's legitimate interests, OR
+- Processing fulfils a public law duty by a public body, OR
+- Processing pursues legitimate interests of the responsible party without overriding data subject rights
+
+The HyperBiscuit script fires before any consent mechanism. The script runs unconditionally on page load. No user interaction precedes data transmission. No consent form references device fingerprinting, geolocation tracking, or form value transmission.
+
+The script does not meet the "necessary for contract performance" test. Submitting an application form constitutes contract initiation. Sending metadata to a third-party analytics server does not facilitate application processing. The analytics data serves marketing optimization, not admission evaluation.
+
+The script does not satisfy "legitimate interests" balancing. Marketing campaign attribution does not override the data subject's reasonable expectation of privacy when submitting identity documents and financial records. The proportionality test fails.
+
+### Condition Three: Purpose Specification
+
+Section 15 requires collection of personal information for a specific, explicitly defined, and lawful purpose related to the institution's functions. The data subject must be aware of this purpose.
+
+The script's actual purpose, per HyperBiscuit's marketing materials, includes cross-site behavioral tracking, device fingerprinting, campaign attribution, and user journey mapping. None of these purposes appear in university privacy notices, application forms, or cookie banners.
+
+The institution collects application data for admission evaluation. Transmitting that data to a marketing analytics company for campaign optimization constitutes incompatible further processing. Section 16 prohibits repurposing data without new consent.
+
+### Condition Four: Further Processing Limitation
+
+Section 16 governs further processing beyond the original collection purpose. Further processing requires compatibility assessment considering:
+
+- The relationship between collection and further processing purposes
+- The nature of the personal information
+- The consequences of unintended further processing for the data subject
+- The existence of contractual guarantees
+
+Transmitting identity numbers, bank accounts, and academic records to a marketing analytics firm for campaign tracking fails compatibility assessment. The relationship between admission processing and marketing attribution lacks logical connection. The nature of the information (identity documents and financial data) demands heightened protection. The consequences include exposure of sensitive data to unauthorized third parties.
+
+### Condition Five: Information Quality
+
+Section 18 requires responsible parties to take reasonably practicable steps to ensure information is complete, accurate, not misleading, and up to date where processing depends on accuracy.
+
+The script captures raw form values at submission time. Users may enter tentative information, correct typos, or abandon partially completed forms. The script fires on submit events, capturing whatever values existed at that moment. Incomplete or erroneous submissions transmit alongside valid applications.
+
+The analytics server receives duplicate entries when users resubmit corrections. Version control does not exist in the tracking infrastructure. Retention policies are undisclosed.
+
+### Condition Six: Openness
+
+Section 18 mandates notification requirements before or during collection. The responsible party must inform the data subject of:
+
+- The identity of the responsible party
+- The purpose of collection
+- Whether supplying information is voluntary or mandatory
+- The consequences of failing to provide information
+- If applicable, any third-party recipients
+- Other information enabling fair processing
+
+The HyperBiscuit script provides none of this information. The optional cookie notice, when present, mentions "cookies" generically. No notice mentions form value transmission, device fingerprinting, geolocation, or third-party analytics servers.
+
+Section 19 requires notification when collecting information not directly from the data subject. When the institution's website transmits form data to HyperBiscuit's servers, this constitutes indirect collection. The subject must learn this fact.
+
+### Condition Seven: Security Safeguards
+
+Section 19 requires responsible parties to secure personal information against loss, damage, theft, destruction, or unauthorized access. Measures must be appropriate to the harm risk and nature of protected information.
+
+Transmitting unencrypted form values to a third-party server with no published security documentation creates unacceptable risk. HTTPS transport encryption protects data in transit but does not guarantee server-side security. The receiving server must implement access controls, audit logging, intrusion detection, and encryption-at-rest.
+
+HyperBiscuit's website contains no security certifications, no ISO 27001 badge, no SOC 2 report, no penetration testing disclosure, and no data breach notification history. Verification becomes impossible.
+
+### Condition Eight: Data Subject Participation
+
+#### Sections 23 through 26 grant data subjects four rights:
+
+- Right to confirm whether the responsible party holds personal information
+- Right to access that information
+- Right to correct or delete inaccurate, irrelevant, excessive, outdated, incomplete, or misleading information
+- Right to object to processing at any time
+
+HyperBiscuit provides no mechanism for exercising these rights. The website contains no privacy notice, no data subject request form, no contact email for privacy inquiries, no retention schedule, and no deletion process. Individuals cannot confirm what data HyperBiscuit stores about them. Individuals cannot request access to their data. Individuals cannot demand correction or deletion.
+
+#### Section 22: Security Compromise Notification
+
+Section 22 requires responsible parties to notify the Information Regulator and affected data subjects when there are reasonable grounds to believe personal information has been accessed or acquired by unauthorized persons.
+
+Notification must occur as soon as reasonably possible, detailing:
+
+- The nature of the security compromise
+- The personal information involved
+- The date or estimated timeframe
+- Measures taken or proposed
+- Contact details for follow-up
+
+As of 1 April 2025, notifications must use the Information Regulator's eServices portal rather than email. The institution cannot demonstrate compliance without evidence of breach response protocols, incident monitoring, and escalation procedures.
+
+### Penalties and Sanctions
+
+Chapter 10 establishes enforcement powers. The Information Regulator may issue compliance notices requiring corrective action within specified timelines. Failure to comply constitutes an offense.
+
+Administrative fines reach up to ZAR 10 million per violation. Criminal sanctions apply for specific offenses including obstruction of investigations, unlawful processing of special personal information, and failure to notify security compromises. Convictions can result in imprisonment up to 10 years.
+
+Individuals may sue for damages under Section 99. Courts award compensation for actual loss suffered due to violations. Punitive damages apply in cases of malice or gross negligence.
+
+### Information Officer Requirements
+
+Section 55 requires every responsible party to designate an Information Officer. The officer oversees POPIA compliance, handles data subject requests, manages complaints, and liaises with the Information Regulator.
+
+Institutions must publish the Information Officer's contact details. Public bodies register automatically. Private bodies must submit registration applications. Individuals can verify registration status through the Information Regulator's portal.
+
+Complaints reach the Regulator via the prescribed form available on inforegulator.org.za/complaints or via email to PAIAComplaints@inforegulator.org.za. The Regulator must advise the complainant and the responsible party on proposed corrective action within reasonable timeframes.
+
+## 6. GDPR Legal Analysis
+
+### Article 3: Territorial Scope
+
+Article 3 extends GDPR jurisdiction beyond EU borders. The regulation applies when:
+
+- The controller or processor is established in the EU, OR
+- The processing relates to offering goods or services to data subjects in the EU regardless of payment, OR
+- The processing monitors behavior occurring within the EU
+
+South African universities attract international applicants from European nations. Prospective students access application portals from Germany, France, Netherlands, United Kingdom, and other EU member states. When a French applicant submits their ID number and bank statement through a South African portal tracking them via HyperBiscuit, the processing occurs in the EU. GDPR applies.
+Article 5: Principles Relating to Processing
+
+### Article 5 establishes seven principles:
+
+Lawfulness, fairness, and transparency require legal basis, equitable treatment, and clear communication. The script's silent operation without notification violates transparency. Processing without consent violates lawfulness.
+
+Purpose limitation restricts collection to specified, explicit, and legitimate purposes. Application submission purposes do not extend to third-party marketing analytics. The mismatch violates Article 5(1)(b).
+
+Data minimization demands collecting only what is necessary. Transmitting device fingerprints, geolocation, and behavioral telemetry serves marketing optimization, not admission evaluation. This excess violates Article 5(1)(c).
+
+Accuracy requires keeping information correct and up to date. Capturing incomplete form submissions and transmitting duplicate corrections creates inaccuracies. No correction mechanism exists.
+
+Storage limitation mandates retention for no longer than necessary. HyperBiscuit publishes no retention schedules. Data persists indefinitely unless individuals manually delete browser storage.
+
+Integrity and confidentiality require appropriate security measures. Undisclosed third-party transmission to a company with no published security documentation fails integrity and confidentiality requirements.
+
+Accountability places burden on controllers to demonstrate compliance. Institutions cannot document compliance because they lack visibility into HyperBiscuit's practices.
+
+### Article 6: Lawfulness of Processing
+
+Article 6 permits processing only when one of six conditions exists:
+
+- Consent from the data subject
+- Contract performance necessity
+- Legal obligation compliance
+- Vital interests protection
+- Public task execution
+- Legitimate interests pursuit
+
+None justify the HyperBiscuit script's operation.
+
+Consent requires being freely given, specific, informed, and unambiguous through clear affirmative action per Article 4(11). The script fires before consent interfaces appear. No checkbox references analytics tracking. No banner mentions device fingerprinting. No form indicates data flows to third parties. Consent does not exist.
+
+Contract performance does not require third-party marketing analytics. Admission evaluation occurs on the institution's servers. Sending copies to an external analytics firm does not facilitate contract fulfillment.
+
+Legal obligations do not mandate marketing analytics transmission.
+
+Vital interests protection refers to life-or-death scenarios. Application tracking does not qualify.
+
+Public task execution applies to governmental functions. While some South African universities are public institutions, marketing analytics does not constitute a public task.
+
+Legitimate interests balancing requires weighing controller interests against data subject rights. Marketing attribution does not override reasonable privacy expectations when submitting identity documents and financial records. The proportionality test fails.
+
+### Article 7: Conditions for Consent
+
+Article 7 imposes strict requirements on consent mechanisms:
+
+- Controllers must demonstrate valid consent was obtained
+- Requests for consent must use clear, plain language separate from other terms
+- Data subjects must freely give consent without coercion
+- Data subjects must withdraw consent as easily as granting it
+- Conditional services cannot hinge on unnecessary consent
+
+The HyperBiscuit script meets none of these standards. No demonstration mechanism exists. No separate consent form exists. No withdrawal mechanism exists. The cookie notice contains only "Okay, thanks" with no decline option.
+
+### Article 13: Information Obligations
+
+Article 13 requires controllers to inform data subjects at the time of data collection about:
+
+- Controller identity and contact details
+- Data protection officer contact information if applicable
+- Purposes and legal basis for processing
+- Legitimate interests if applicable
+- Recipients or categories of recipients of personal data
+- Plans for international data transfers
+- Retention periods
+- Data subject rights
+- Right to withdraw consent
+- Right to lodge complaints with supervisory authorities
+- Whether provision is statutory or contractual
+- Consequences of failure to provide data
+- Automated decision-making including profiling
+
+The script provides none of this information. The institution's website must publish a privacy notice covering these elements separately from the tracking mechanism. However, even if such a notice exists, the script's autonomous operation violates Article 13 because processing commences before notification completes.
+
+### Article 25: Data Protection by Design and Default
+
+Article 25 mandates implementing appropriate technical and organizational measures:
+
+- Data protection principles embedded into processing design
+- Data minimization enforced by default settings
+- Only necessary data processed for specific purposes
+- Access restricted to those requiring it
+- Pseudonymization or encryption applied where feasible
+
+The HyperBiscuit script violates Article 25 through three mechanisms:
+
+Default settings capture maximum data: full device fingerprints, GPS coordinates, form values, behavioral telemetry. Less invasive alternatives require manual configuration flags that ordinary users cannot access.
+
+No pseudonymization occurs before transmission. Identifiers remain raw and directly linkable to individuals.
+
+No access restrictions exist on the receiving server. Any analyst at HyperBiscuit potentially views all submitted form values.
+
+No encryption-at-rest documentation exists.
+
+### Article 32: Security of Processing
+
+Article 32 requires controllers and processors to implement appropriate technical and organizational measures ensuring a security level appropriate to the risk:
+
+- Pseudonymization and encryption
+- Confidentiality, integrity, availability, and resilience of processing systems
+- Timely restoration after incidents
+- Regular testing and evaluation of measures
+
+Assessment factors include processing nature, scope, context, purposes, and likelihood of harm. Sensitive data (identity documents, financial records, academic credentials) raises the risk level requiring stronger protections.
+
+HyperBiscuit publishes no security documentation. No ISO 27001 certification exists. No SOC 2 Type II report exists. No third-party security audits appear on the website. No data breach history disclosure exists. No penetration testing summary exists. No encryption standards specification exists. No incident response plan exists publicly.
+
+Risk assessment yields unacceptable conclusions. Deploying this script violates Article 32.
+
+### ePrivacy Directive Requirements
+
+The ePrivacy Directive (2002/58/EC, as amended by 2009/136/EC) supplements GDPR through specific electronic communications rules:
+
+- Article 5(3) requires prior informed consent before storing or accessing information on terminal equipment
+- Consent must be freely given, specific, and informed
+- Users must receive clear and comprehensive information
+- Stored information includes cookies, local storage, device identifiers, and fingerprinting outputs
+
+The HyperBiscuit script violates Article 5(3) by:
+
+- Storing hb_dev in localStorage before consent
+- Storing hb_ses in sessionStorage before consent
+- Storing geolocation cache in localStorage before consent
+- Computing device fingerprint before consent
+- Initiating cross-domain iframe connection before consent
+
+The optional cookie notice contains only assent language, not consent language. No distinction appears between strictly necessary cookies (exempt) and tracking cookies (requiring consent). No granular selection exists. No reject button exists.
+
+### GDPR Penalties
+
+Article 83 establishes tiered administrative fines:
+
+Lower tier: Up to €10 million or 2% of total worldwide annual turnover for preceding financial year, whichever higher, applies to infringements of:
+
+- Technical and organizational measures (Articles 25 and 32)
+- Data protection impact assessments (Article 35)
+- Data protection officer appointment (Articles 37-39)
+- Data breach notifications (Articles 33 and 34)
+
+Upper tier: Up to €20 million or 4% of total worldwide annual turnover for preceding financial year, whichever higher, applies to infringements of:
+
+- Basic processing principles (Article 5)
+- Conditions for consent (Article 7)
+- Data subject rights (Articles 12-22)
+- International transfer rules (Articles 44-49)
+
+France's CNIL fined Google €150 million in 2022 for cookie banner dark patterns. Ireland's DPC imposed fines totaling over €400 million against Meta and other platforms. The threshold for liability is not the company's location but the data subjects' location at processing time.
+
+South African institutions serving EU applicants face exposure under GDPR. The penalties exceed POPIA's ZAR 10 million ceiling significantly when expressed in euros.
+
+## 7. Practical Defense Strategies
+
+### Browser Extensions Providing Immediate Protection
+
+#### uBlock Origin
+
+Available for Firefox, Chrome, Brave, and Edge. This content blocker applies community-maintained filter lists including EasyPrivacy, which blocks known tracking domains. Users add custom filters via Settings > My filters panel. Adding ||d.hs.uy^ blocks all requests to the HyperBiscuit endpoint regardless of where they originate.
+
+The extension shows blocked requests in real-time via the popup interface. Users can identify the script's activity patterns by examining network logs filtered by domain.
+
+Installation steps:
+
+- Navigate to the official extension repository (Firefox Add-ons or Chrome Web Store)
+- Click "Add to Firefox" or "Add to Chrome"
+- Confirm installation when prompted
+- Click the uBlock icon in the toolbar
+- Select "My filters"
+- Add ||d.hs.uy^ on a blank line
+- Click "Apply changes"
+
+#### NoScript
+
+Available for Firefox and Chrome. This extension blocks JavaScript execution by default. Users whitelist trusted sites selectively. Preventing script execution stops fingerprint computation, geolocation requests, form value transmission, and cross-site tracking entirely.
+
+Configuration steps:
+
+- Install from Firefox Add-ons or Chrome Web Store
+- Click the NoScript icon in the toolbar
+- Default mode blocks all scripts
+- Whitelist specific sites by clicking the lock icon and selecting "Temporary permissions" or "Permanent permissions"
+- Use "Trusted Sites" list for domains allowing full functionality
+- Monitor the blocked script panel to identify third-party trackers
+
+#### Brave Browser
+
+Brave integrates tracker blocking natively without extensions. Shields activate automatically on every site. Brave's fingerprinting randomization produces inconsistent device signatures across visits, breaking fingerprinting-based tracking.
+
+Advantages:
+
+- No extension installation required
+- Faster than extension-based blocking
+- Fingerprint randomization defeats canvas fingerprinting
+- Built-in HTTPS upgrade enforcement
+- Integrated private search engine (Brave Search)
+- Sync capabilities across devices
+
+### Browser Configuration Adjustments
+
+#### Disable geolocation globally
+
+- Firefox: Navigate to Settings > Privacy & Security > Permissions > Location. Click "Block new requests." Alternatively, enter about:config and set geo.enabled to false.
+- Chrome: Navigate to Settings > Privacy and security > Site settings > Location. Select "Don't allow sites to access your location."
+- Edge: Navigate to Settings > Cookies and site permissions > Location. Toggle "Ask before accessing" off.
+
+#### Enable Global Privacy Control
+
+Global Privacy Control sends opt-out signals with every HTTP request. Brave enables GPC by default. Firefox users install the Global Privacy Control extension. Chrome users access chrome://flags/#privacy-sandbox-settings and enable relevant privacy sandbox features.
+
+Note: The HyperBiscuit script does not currently check for GPC signals. Documenting this omission strengthens regulatory complaints.
+
+#### Configure cookie behavior
+
+All major browsers support third-party cookie blocking. Set browser to "Block third-party cookies." Clear cookies regularly via automatic cleanup on browser exit. Use private/incognito mode for applications containing sensitive information.
+
+#### Clear localStorage systematically
+
+The script stores identifiers in localStorage keys: `hb_dev`, `hb_ses`, `hb_data`, `_mgck_globe`. Clear these manually or configure automatic cleanup.
+
+Firefox: Settings > Privacy & Security > Cookies and Site Data > Clear Data. Or enter `about:storage` to manage per-site storage.
+
+Chrome: Settings > Privacy and security > Site Settings > View permissions and data stored across sites. Search for affected domains and remove data.
+
+### Network-Level Blocking Solutions
+
+#### DNS-based filtering
+
+NextDNS, Pi-hole, and AdGuard DNS block tracking domains at DNS resolution. When the browser requests d.hs.uy, the DNS server returns NXDOMAIN instead of an IP address. The script cannot connect to the analytics server.
+
+NextDNS setup:
+
+- Create account at nextdns.io
+- Generate a configuration ID
+- In the dashboard, navigate to "Denylist"
+- Add `d.hs.uy` and `hs.uy` to the blocklist
+- Configure router or device DNS settings to use NextDNS resolver addresses
+- Test connectivity by visiting dnsleaktest.com
+
+#### Firewall rule configuration
+
+pfSense/OPNsense:
+
+- Add outbound rules blocking traffic to d.hs.uy and hs.uy
+- Block both IPv4 and IPv6 if supported
+- Log blocked attempts for audit purposes
+- Test by attempting to ping or curl the domain
+
+Little Snitch (macOS):
+
+- Install Little Snitch
+- Configure rule blocking outbound connections to `d.hs.uy`
+- Review network monitor dashboard for suspicious activity
+- Receive real-time alerts when applications attempt tracking connections
+
+### Data Subject Rights Exercises
+
+#### Submit access requests under POPIA Section 23
+
+Contact the institution's Information Officer requesting confirmation whether the institution holds personal information about the requester. Specify what information is held, purposes for processing, recipients, retention periods, and sources. Request copies of all personal information including data transmitted to third parties.
+
+Institutions must respond within 30 days. Extensions apply for complex requests with advance notice.
+
+#### Submit deletion requests under POPIA Section 24
+
+Request correction or deletion of personal information that is inaccurate, irrelevant, excessive, outdated, incomplete, or misleading. Grounds include data no longer necessary for original purpose, withdrawn consent, unlawful processing, or compliance with legal obligations requiring deletion.
+
+#### File complaints with the Information Regulator
+
+Visit <Link href="https://inforegulator.org.za/complaints">inforegulator.org.za/complaints</Link>. Download the prescribed complaint form. Complete sections detailing:
+
+- Your identity and contact information
+- Name and contact details of the responsible party
+- Description of the alleged violation
+- Dates when violations occurred
+- Steps you took to resolve the matter directly
+- Any supporting documentation
+
+Submit via the eServices portal (mandatory since 1 April 2025) or email to PAIAComplaints@inforegulator.org.za.
+
+#### Lodge GDPR complaints with national DPAs
+
+If processing occurs from within the EU, file complaints with national Data Protection Authorities. Examples include:
+
+- Ireland: dataprotection.ie
+- Germany: datenschutz-beschwerde.de (varies by state)
+- France: cnil.fr
+- Netherlands: autoriteitpersoonsgegevens.nl
+- United Kingdom: ico.org.uk (post-Brexit UK GDPR)
+
+DPA websites provide complaint forms or online submission portals. Processing times vary but typically span months.
+
+#### Direct contact with institutions
+
+Identify the Information Officer via the institution's PAIA manual. Many South African universities publish Information Officer contacts on their compliance pages. Send written requests via email or registered post. Retain copies for evidence.
+
+If the institution fails to respond within 30 days, escalate to the Information Regulator.
+
+### Institutional Administrator Actions
+
+#### Perform script audits
+
+Open browser DevTools (F12). Navigate to Network tab. Filter by domain containing "hs.uy" or "hyperbiscuit". Reload the page. Observe POST requests to d.hs.uy/i. Submit a test form. Observe payload contents in the request body. Decode JSON or decompress binary payloads to confirm what data transmits.
+
+#### Inspect script tags
+
+View page source. Search for `d.hs.uy` or `c.js` with `data-api-key` attributes. Document the script location and configuration parameters. Check `<head>` and `<body>` sections for injection points.
+
+#### Remove unauthorized scripts
+
+Delete script tags from CMS templates, WordPress plugins, or custom HTML. Contact developers or agencies who originally implemented the tracking. Request documentation showing what data was being collected and for what purposes.
+
+#### Require data processing agreements
+
+Before reintroducing analytics scripts, obtain written data processing agreements from providers specifying:
+
+- Purposes and duration of processing
+- Nature and types of data collected
+- Categories of data subjects
+- Security measures implemented
+- Sub-processor listings
+- Data retention schedules
+- Deletion procedures
+- Cooperation with data subject requests
+- Breach notification timelines
+- Audit rights
+
+Verify HyperBiscuit can provide such an agreement. If not, select alternative providers with proper compliance infrastructure.
+
+## 8. Recommended Alternatives
+
+### Privacy-Focused Analytics Providers
+
+#### Matomo (formerly Piwik)
+
+Open-source analytics platform offering full data ownership. Self-hosted deployment keeps data within the institution's infrastructure. GDPR-compliant by design with anonymization options, consent management integration, and no cross-site tracking by default.
+
+Matomo features:
+
+- Complete data sovereignty through self-hosting
+- Consent management module for cookie banners
+- Anonymize visitor IPs
+- No fingerprinting by default
+- Export data in GDPR-required formats
+- Pricing scales with pageviews, starting free for self-hosted
+
+#### Fathom Analytics
+
+Simple privacy-focused analytics serving small-to-medium websites. No cookies required. GDPR and CCPA compliant. No fingerprinting. Single flat pricing with no pageview limits.
+
+Fathom features:
+
+- No cookies, no tracking scripts violating privacy
+- No personal data collection beyond pageviews and referrers
+- Server-side aggregation prevents individual tracking
+- Simple pricing structure
+- Dashboard provides actionable insights without surveillance
+
+#### Plausible Analytics
+
+Open-source lightweight analytics. Single-page footprint under 1KB. No cookies. GDPR and PECR compliant. Transparent data collection with public documentation.
+
+Plausible features:
+
+- Minimal JavaScript footprint
+- No cookies or personal data collection
+- Self-hosted option available
+- Cloud-hosted pricing starts at €9/month
+- Real-time analytics dashboard
+- Integration with WordPress, Ghost, and static site generators
+
+## 9. Conclusion & Summary
+
+### Technical Summary
+
+The HyperBiscuit tracking script performs five categories of data collection:
+
+- Device fingerprinting using canvas rendering and capability bitfields
+- Geolocation tracking with GPS-level precision
+- Form field value capture transmitting submitted data to third-party servers
+- Cross-site session linkage enabling user journey reconstruction
+- Behavioral telemetry recording page loads, interactions, and navigation
+
+The script executes without consent, without notification, without integration into consent management platforms, and without any user-visible indicators.
+
+### Legal Summary Under POPIA
+
+The script violates POPIA conditions across seven of the eight statutory requirements.
+
+#### Condition 1 (Accountability):
+
+Institutions fail to verify operator compliance. The responsible party bears liability for all processing carried out by the operator, which is HyperBiscuit. Ignorance of the script's capabilities does not constitute a defence under Section 20.
+
+#### Condition 2 (Processing Limitation):
+
+No lawful basis exists for silent data collection. The script fires before any consent mechanism appears. No user interaction precedes data transmission. None of the six lawful processing grounds in Section 11 apply to marketing analytics tracking of identity documents and financial records.
+
+#### Condition 3 (Purpose Specification):
+
+Purposes remain undisclosed to data subjects. The script's actual purposes include cross-site behavioural tracking, device fingerprinting, and campaign attribution. None of these appear in university privacy notices, application forms, or cookie banners.
+
+#### Condition 4 (Further Processing):
+
+Marketing purposes are incompatible with admission processing. Transmitting identity numbers, bank accounts, and academic records to a marketing analytics firm fails the compatibility assessment under Section 16. The relationship between admission processing and marketing attribution lacks logical connection.
+
+#### Condition 6 (Openness):
+
+No notification is provided before or during collection. The optional cookie notice mentions "cookies" generically. No notice mentions form value transmission, device fingerprinting, geolocation, or third-party analytics servers. Section 18 requires specific notification including the identity of the responsible party, the purpose of processing, and whether information is being transferred to a third party.
+
+#### Condition 7 (Security Safeguards):
+
+Third-party transmission occurs without security verification. HyperBiscuit's website contains no security certifications, no ISO 27001 badge, no SOC 2 report, no penetration testing disclosure, and no data breach notification history. The institution cannot verify that appropriate technical and organisational measures exist on the receiving server.
+
+#### Condition 8 (Data Subject Participation):
+
+No mechanism exists for access, correction, or deletion requests. HyperBiscuit provides no privacy notice, no data subject request form, no contact email for privacy inquiries, no retention schedule, and no deletion process. Individuals cannot confirm what data HyperBiscuit stores about them, request access, or demand correction or deletion.
+
+Potential penalties include administrative fines up to ZAR 10 million per violation, criminal sanctions up to 10 years imprisonment, and civil liability for damages under Section 99.
+
+### Legal Summary Under GDPR
+
+The script violates GDPR articles spanning the full spectrum of processing principles.
+
+#### Article 5:
+
+Violations cover lawfulness, fairness, transparency, purpose limitation, data minimisation, accuracy, storage limitation, integrity, confidentiality, and accountability. The script's silent operation without notification violates transparency. Processing without consent violates lawfulness. Application submission purposes do not extend to third-party marketing analytics. Transmitting device fingerprints, geolocation, and behavioural telemetry serves marketing optimisation, not admission evaluation. No retention schedules are published. No security documentation exists.
+
+#### Article 6
+
+Violated because no lawful basis for processing exists. Consent was not obtained. Contract performance does not require third-party marketing analytics. Legal obligations do not mandate analytics transmission. Vital interests protection does not apply. Public task execution does not cover marketing analytics. Legitimate interests balancing fails because marketing attribution does not override reasonable privacy expectations when submitting identity documents and financial records.
+
+#### Article 7
+
+Consent conditions are not satisfied. No demonstration mechanism exists. No separate consent form exists. No withdrawal mechanism exists. The cookie notice contains only "Okay, thanks" with no decline option. Consent must be freely given, specific, informed, and unambiguous through clear affirmative action per Article 4(11). None of these requirements are met.
+
+#### Article 13
+
+Information obligations are not fulfilled. The script provides none of the thirteen required disclosures at the time of data collection. The institution's website must publish a privacy notice covering these elements separately from the tracking mechanism. Even if such a notice exists, the script's autonomous operation violates Article 13 because processing commences before notification completes.
+
+#### Article 25
+
+Data protection by design and default is violated. Default settings capture maximum data. Less invasive alternatives require manual configuration flags that ordinary users cannot access. No pseudonymisation occurs before transmission. Identifiers remain raw and directly linkable to individuals. No access restrictions exist on the receiving server.
+
+#### Article 32
+
+Security of processing is inadequate. HyperBiscuit publishes no security documentation of any kind. Risk assessment yields unacceptable conclusions given the sensitivity of the data (identity documents, financial records, academic credentials).
+
+#### ePrivacy Directive Article 5(3)
+
+Violated through terminal device storage without consent. The script stores hb_dev in localStorage, hb_ses in sessionStorage, geolocation cache in localStorage, computes device fingerprints, and initiates cross-domain iframe connections, all before any consent is obtained.
+
+Potential penalties include administrative fines up to €20 million or 4% of annual global turnover, whichever is higher. France's CNIL fined Google €150 million in 2022 for cookie banner dark patterns. Ireland's DPC imposed fines totalling over €400 million against Meta and other platforms. The threshold for liability is not the company's location but the data subjects' location at processing time. South African institutions serving EU applicants face exposure under GDPR.
+
+### Actionable Summary for Individuals
+
+Individuals can take the following steps to protect themselves:
+
+- Install uBlock Origin with custom domain blocking for d.hs.uy
+- Enable NoScript to prevent JavaScript execution on untrusted sites
+- Switch to Brave browser with native tracker blocking and fingerprint randomisation
+- Disable geolocation access globally in browser settings
+- Enable Global Privacy Control where supported
+- Clear localStorage and cookies after each session
+- Use DNS-level blocking via NextDNS or Pi-hole
+- Submit POPIA access and deletion requests to institutions
+- File complaints with the Information Regulator at inforegulator.org.za
+- Lodge GDPR complaints with national DPAs for EU-impacted processing
+
+### Institutional Action Items
+
+Institutions should take the following steps to achieve compliance:
+
+- Audit all third-party scripts on public-facing websites
+- Remove HyperBiscuit or similar tracking scripts lacking compliance documentation
+- Implement consent management platforms with granular controls
+- Update privacy notices disclosing all third-party data recipients
+- Appoint and register Information Officers per POPIA requirements
+- Establish data breach notification procedures per Section 22
+- Require data processing agreements from all analytics vendors
+- Train staff on POPIA and GDPR compliance obligations
+- Conduct regular data protection impact assessments
+
+### Final Observation
+
+This case illustrates systemic gaps in third-party script governance. Educational institutions entrusted with sensitive student information lack visibility into the data flows initiated by analytics scripts. Marketing departments prioritise campaign optimisation over privacy compliance. Developers embed tracking code without understanding its implications.
+
+The remedies exist. The legal frameworks provide clear requirements. The technical controls empower individual protection. What remains lacking is enforcement momentum and institutional priority alignment. Until regulators impose meaningful penalties and until institutions elevate data protection above marketing convenience, tracking scripts will continue operating in the shadows of compliance theatre.
+
+---
+
+## Appendices
+
+### Appendix A: Reference Links
+
+- <Link href="https://inforegulator.org.za">South African Information Regulator</Link>
+- <Link href="https://popia.co.za">POPIA Full Text</Link>
+- <Link href="https://gdpr-info.eu">GDPR Official Text</Link>
+- <Link href="https://gdpr.eu">GDPR Compliance Resources</Link>
+- <Link href="https://www.iabeurope.eu/transparency-and-consent-framework">IAB Transparency and Consent Framewor </Link>
+- <Link href="https://www.hyperbiscuit.com">HyperBiscuit Website</Link>
+- <Link href="https://nextdns.io">NextDNS (DNS Filtering)</Link>
+- <Link href="https://github.com/gorhill/uBlock">uBlock Origin</Link>
+- <Link href="https://noscript.net">NoScript (Firefox)</Link>
+- <Link href="https://brave.com">Brave Browser</Link>
+
+### Appendix B: Glossary of Technical Terms
+
+- Canvas fingerprinting: Rendering hidden graphics on an HTML canvas element to extract hardware/software-specific rendering characteristics as unique identifiers.
+- Geolocation API: JavaScript interface exposing device GPS coordinates via navigator.geolocation.
+- localStorage: Browser storage mechanism persisting key-value pairs across sessions.
+- sessionStorage: Browser storage mechanism persisting key-value pairs only within a single tab session.
+- IIFE: Immediately Invoked Function Expression; JavaScript pattern executing anonymous functions on definition.
+- MurmurHash3: Non-cryptographic hash function optimised for speed and distribution uniformity.
+- DOM: Document Object Model; tree representation of HTML structure manipulatable via JavaScript.
+- Performance API: Built-in browser interface exposing timing metrics for page load events.
+- Beacon API: Browser API allowing background data transmission even when a page unloads.
+- Fetch API: Modern JavaScript interface for HTTP requests replacing XMLHttpRequest.
+- CSP: Content Security Policy header restricting allowed script sources.
+- TLS: Transport Layer Security protocol encrypting data in transit.
+- CDN: Content Delivery Network distributing assets across geographically dispersed servers.
+- ETag: HTTP header identifier for caching resource versions.
+
+### Appendix C: Template Documents
+
+#### Template 1: POPIA Access Request Letter
+
+```
+To: [Institution Name] Information Officer
+Date: [Current Date]
+Subject: Request for Access to Personal Information (POPIA Section 23)
+
+Dear Information Officer,
+
+I hereby request access to personal information about myself held by
+[Institution Name] in accordance with Section 23 of the Protection
+of Personal Information Act (Act 4 of 2013).
+
+Please provide:
+
+1. Confirmation whether you hold personal information about me
+2. Copies of all personal information you hold about me
+3. Details of:
+   - The purpose of processing each category of information
+   - Any third-party recipients of my personal information
+   - Retention periods for each data category
+   - Sources of information if not collected directly from me
+
+My details:
+Name: [Full Name]
+ID Number: [SA ID or Passport Number]
+Email: [Email Address]
+Phone: [Contact Number]
+Physical Address: [Postal Address]
+Application Reference: [If applicable]
+
+I understand I may be required to verify my identity. Please advise
+what documentation you require.
+
+Per POPIA Section 23, you must respond within 30 days.
+
+Regards,
+[Signature]
+[Printed Name]
+```
+
+#### Template 2: POPIA Complaint to Information Regulator
+
+```
+To: Information Regulator of South Africa
+Email: PAIAComplaints@inforegulator.org.za
+Portal: https://inforegulator.org.za/complaints
+
+Subject: POPIA Violation Complaint Against [Institution Name]
+
+Complainant Details:
+Name: [Full Name]
+ID Number: [SA ID or Passport Number]
+Contact: [Email and Phone]
+Address: [Physical Address]
+
+Responsible Party Details:
+Institution Name: [Official Institution Name]
+Information Officer: [Name if known]
+Contact Details: [If known]
+Website: [URL]
+
+Description of Alleged Violation:
+[Date range] I submitted an application via [Institution Website URL].
+During this interaction, third-party tracking scripts (identified as
+originating from d.hs.uy/HyperBiscuit) collected:
+
+1. My form field values including identity number and banking information
+2. Device fingerprinting data
+3. Geolocation coordinates
+4. Behavioural telemetry
+
+Violations:
+- No notification of data collection prior to processing
+- No consent obtained for third-party transmission
+- No privacy policy disclosure regarding analytics vendor
+- No mechanism to exercise data subject rights
+- Potential unauthorised transfer of sensitive personal information
+
+Steps Taken to Resolve:
+[I attempted direct contact on [date] via [method].
+Response: [outcome]]
+
+Relief Sought:
+- Confirmation of compliance status
+- Ordering remediation measures
+- Deletion of unlawfully collected data
+- Compensation for damages incurred
+
+Supporting Documentation:
+[List attached evidence]
+
+Declaration:
+I declare that the information provided is true and accurate.
+
+[Signature]
+[Date]
+```
+
+### Appendix E: Detection Methods
+
+#### Manual Inspection Steps
+
+- Open browser DevTools (F12 key)
+- Navigate to Network tab
+- Apply filter: d.hs.uy OR hs.uy OR hyperbiscuit
+- Reload the page (Ctrl+F5)
+- Observe POST requests to tracking endpoints
+- Examine request payloads for data contents
+- Check Initiator column for script source location
+
+#### Automated Detection Script
+
+```js
+// Paste in browser console to detect tracking
+const trackingIndicators = {
+	domains: ["hs.uy", "hyperbiscuit", "d.hs"],
+	localStorageKeys: ["hb_", "_mgck"],
+	functionNames: ["__tcfapi", "cbjs", "__uspapi"],
+};
+
+console.log("Checking for tracking indicators...");
+
+// Check localStorage
+Object.keys(localStorage).forEach((key) => {
+	trackingIndicators.localStorageKeys.forEach((pattern) => {
+		if (key.includes(pattern)) {
+			console.warn(`Suspicious localStorage key: ${key}`);
+		}
+	});
+});
+
+// Check network activity
+console.log("Monitor Network tab for domain matches");
+console.log("Domains to watch:", trackingIndicators.domains);
+```
+
+#### Extension-Based Detection
+
+Recommended extensions providing real-time detection:
+
+- Ghostery (all browsers): Tracker identification and blocking with detailed entity profiles
+- Privacy Badger (all browsers): Learning-based tracker blocking that adapts to new tracking patterns
+- ClearURLs (all browsers): Removes tracking parameters from URLs automatically
+- Cookie AutoDelete (all browsers): Automatic cookie cleanup when tabs close
