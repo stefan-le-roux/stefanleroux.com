@@ -9,6 +9,9 @@ alt: "The Astro logo on a dark background with a pink glow."
 status: visible
 ---
 
+import { Image } from "astro:assets";
+import zindex from "../../assets/images/inkfish-z-index.png";
+
 ## Executive Summary
 
 INKFISH presents themselves as a digital marketing agency specialising in website development, design work, and hosting services. This audit examines their public-facing website from technical, accessibility, legal, and business credibility perspectives. The findings reveal fundamental issues across multiple categories that directly contradict the services they offer to clients.
@@ -123,6 +126,8 @@ While close buttons include `aria-label`, the form lacks:
 Gravity Forms injected into this container inherits these gaps despite the plugin's native accessibility features.
 
 ### Stacking Context Catastrophe
+
+<Image src={zindex} alt="z-index issues" format="avif" />
 
 The z-index mismanagement creates cascading failures throughout the site:
 
