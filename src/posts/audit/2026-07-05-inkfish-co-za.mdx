@@ -131,7 +131,7 @@ The z-index mismanagement creates cascading failures throughout the site:
 - Tilting Text Sections use transforms creating new stacking contexts with elevated z-index values
 - Popup Form at z-index 999999 still renders behind these transformed elements
 - Navigation Bar receives artificially inflated z-index to sit above tilting sections
-- Mobile Menu becomes blocked by navigation bar since hamburger click targets remain underneath
+- Mobile Menu's search bar becomes blocked by top navigation bar since it remain underneath
 - Fixed Elements (reCAPTCHA badge, popup trigger button) experience intermittent obscuration
 
 #### Root Cause
