@@ -25,7 +25,7 @@ const audit = defineCollection({
 });
 
 const share = defineCollection({
-	loader: glob({ pattern: "**/*.{astro,md,mdx}", base: "./src/posts/share/" }),
+	loader: glob({ pattern: "**/*.{astro,md,mdx}", base: "./src/posts/doc/" }),
 	schema: postSchema,
 });
 
