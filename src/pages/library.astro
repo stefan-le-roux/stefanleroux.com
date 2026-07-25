@@ -7,15 +7,15 @@ import Soon from "../blocks/soon.astro";
 
 const isVisible = (entry: any) => entry.data.status === "visible";
 
-const [rawBlog, rawAudit, rawShare] = await Promise.all([
+const [rawBlog, rawAudit, rawRepo] = await Promise.all([
 	getCollection("blog"),
 	getCollection("audit"),
-	getCollection("share"),
+	getCollection("repo"),
 ]);
 
 const blogPosts = rawBlog.filter(isVisible);
 const auditPosts = rawAudit.filter(isVisible);
-const sharePosts = rawShare.filter(isVisible);
+const repoPosts = rawRepo.filter(isVisible);
 
 const title = "Stefan le Roux | Code Library – Articles, Snippets & Audits";
 const description =
@@ -48,7 +48,6 @@ const image = "../assets/images/favicon.svg";
 									width={320}
 									height={168}
 									format="avif"
-									layout="constrained"
 									priority
 								/>
 								<hgroup>
@@ -88,7 +87,6 @@ const image = "../assets/images/favicon.svg";
 									width={320}
 									height={168}
 									format="avif"
-									layout="constrained"
 								/>
 								<hgroup>
 									<h2>
@@ -116,9 +114,9 @@ const image = "../assets/images/favicon.svg";
 		</hgroup>
 
 		{
-			sharePosts.length > 0 ? (
+			repoPosts.length > 0 ? (
 				<ul class="posts" role="list">
-					{sharePosts.map((post) => (
+					{repoPosts.map((post) => (
 						<li>
 							<article>
 								<Image
@@ -127,7 +125,6 @@ const image = "../assets/images/favicon.svg";
 									width={320}
 									height={168}
 									format="avif"
-									layout="constrained"
 								/>
 								<hgroup>
 									<h2>
