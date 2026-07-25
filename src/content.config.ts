@@ -24,9 +24,9 @@ const audit = defineCollection({
 	schema: postSchema,
 });
 
-const share = defineCollection({
-	loader: glob({ pattern: "**/*.{astro,md,mdx}", base: "./src/posts/doc/" }),
+const repo = defineCollection({
+	loader: glob({ pattern: "**/*.{astro,md,mdx}", base: "./src/posts/repo/" }),
 	schema: postSchema,
 });
 
-export const collections = { blog, audit, share };
+export const collections = { blog, audit, repo };
