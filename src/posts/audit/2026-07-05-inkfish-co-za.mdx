@@ -128,7 +128,7 @@ Gravity Forms injected into this container inherits these gaps despite the plugi
 
 ### Stacking Context Catastrophe
 
-<Image src={zindex} alt="z-index issues" format="avif" />
+<Image src={zindex} alt="z-index issues" format="avif" layout="constrained" />
 
 The z-index mismanagement creates cascading failures throughout the site:
 
@@ -152,7 +152,12 @@ Any team member adding new components must audit the entire stylesheet for confl
 
 #### Flip Card Implementation
 
-<Image src={backface} alt="css backface-visibilty property incorrectly implemented" />
+<Image
+	src={backface}
+	alt="css backface-visibilty property incorrectly implemented"
+	format="avif"
+	layout="constrained"
+/>
 
 Service showcase cards use CSS 3D transforms for hover/tap animation effects.
 
