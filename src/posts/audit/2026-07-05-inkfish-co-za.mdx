@@ -11,6 +11,7 @@ status: visible
 
 import { Image } from "astro:assets";
 import zindex from "../../assets/images/inkfish-z-index.png";
+import backface from "../../assets/images/post-audit-inkfish-co-za-backface.png";
 
 ## Executive Summary
 
@@ -150,6 +151,8 @@ Any team member adding new components must audit the entire stylesheet for confl
 ### Cross-Browser Compatibility Issues
 
 #### Flip Card Implementation
+
+<Image src={backface} alt="css backface-visibilty property incorrectly implemented" />
 
 Service showcase cards use CSS 3D transforms for hover/tap animation effects.
 
