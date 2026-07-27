@@ -2,9 +2,9 @@
 	"name": "stefanleroux-com",
 	"version": "0.0.1",
 	"dependencies": {
-		"@astrojs/mdx": "7.0.3",
+		"@astrojs/mdx": "7.0.4",
 		"@astrojs/sitemap": "3.7.3",
-		"astro": "7.1.3"
+		"astro": "7.1.4"
 	},
 	"scripts": {
 		"dev": "astro dev",
