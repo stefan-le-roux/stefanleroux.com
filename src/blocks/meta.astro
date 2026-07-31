@@ -11,7 +11,6 @@ const {
 	sitemap = `${import.meta.env.BASE_URL}sitemap-index.xml`,
 } = Astro.props;
 
-const baseURL = new URL(import.meta.env.BASE_URL, Astro.url).toString();
 const canonicalURL = new URL(Astro.url.pathname, Astro.url).toString();
 const imageURL = new URL(image, Astro.url).toString();
 const faviconURL = favicon.toString();
@@ -27,12 +26,6 @@ const sitemapURL = sitemap.toString();
 	<meta name="robots" content="index, follow" />
 	<meta name="generator" content={Astro.generator} />
 	<meta name="color-scheme" content="dark light" />
-
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:url" content={canonicalURL} />
-	<meta name="twitter:title" content={title} />
-	<meta name="twitter:description" content={description} />
-	<meta name="twitter:image" content={imageURL} />
 
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content={canonicalURL} />
