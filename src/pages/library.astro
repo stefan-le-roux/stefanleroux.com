@@ -45,8 +45,8 @@ const image = "../assets/images/favicon.svg";
 								<Image
 									src={post.data.image ?? "/assets/images/placeholder.avif"}
 									alt={post.data.alt ?? ""}
-									width={320}
-									height={168}
+									width={600}
+									height={315}
 									format="avif"
 									priority
 								/>
@@ -84,8 +84,8 @@ const image = "../assets/images/favicon.svg";
 								<Image
 									src={post.data.image ?? "/assets/images/placeholder.avif"}
 									alt={post.data.alt ?? ""}
-									width={320}
-									height={168}
+									width={600}
+									height={315}
 									format="avif"
 								/>
 								<hgroup>
@@ -122,8 +122,8 @@ const image = "../assets/images/favicon.svg";
 								<Image
 									src={post.data.image ?? "/assets/images/placeholder.avif"}
 									alt={post.data.alt ?? ""}
-									width={320}
-									height={168}
+									width={600}
+									height={315}
 									format="avif"
 								/>
 								<hgroup>
@@ -226,11 +226,10 @@ const image = "../assets/images/favicon.svg";
 		}
 
 		img {
+			inline-size: 100%;
 			aspect-ratio: 1.91 / 1;
 			object-fit: cover;
 			border-radius: var(--borderRadius) var(--borderRadius) 0 0;
-			transition: scale 0.2s var(--easing);
-			transform-origin: 50% 100%;
 		}
 
 		time {
