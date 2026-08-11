@@ -63,8 +63,8 @@
 
 @layer theme {
 	@font-face {
-		font-family: space-grotesk;
-		src: url("/fonts/space-grotesk_variable-wght.woff2") format("woff2-variations");
+		font-family: Cause;
+		src: url("/fonts/Cause-VariableFont_wght.woff2") format("woff2-variations");
 		font-style: normal;
 		font-display: fallback;
 		font-weight: 300 700;
@@ -115,7 +115,7 @@
 			repeating-linear-gradient(-30deg, var(--bgGrad)) 50% 50% / cover fixed,
 			oklch(from var(--canvasColor) l c h);
 		font:
-			normal normal normal normal var(--fs-2) / 1.25 space-grotesk,
+			normal normal normal normal var(--fs-2) / 1.35 Cause,
 			system-ui;
 		font-variation-settings: "wght" 300;
 		color: var(--canvasText);
