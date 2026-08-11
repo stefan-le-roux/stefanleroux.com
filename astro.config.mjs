@@ -8,5 +8,4 @@ export default defineConfig({
 	base: "/",
 	trailingSlash: "always",
 	integrations: [mdx(), sitemap()],
-	outDir: "../../server/stefanleroux.com",
 });
