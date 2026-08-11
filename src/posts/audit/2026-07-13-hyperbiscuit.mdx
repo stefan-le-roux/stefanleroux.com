@@ -19,7 +19,7 @@ The company publishes no privacy policy, terms of service, or cookie policy. The
 
 South Africa's Protection of Personal Information Act (POPIA, Act 4 of 2013) and the EU General Data Protection Regulation (GDPR, Regulation 2016/679) establish specific requirements for lawful processing. The deployment of this tracking script violates multiple conditions under both frameworks. This analysis provides the technical documentation, legal framework violations, and actionable steps for individual users to protect themselves.
 
-## 1. Who Is HyperBiscuit
+## Who Is HyperBiscuit
 
 ### Company Profile
 
@@ -64,7 +64,7 @@ URL Status
 
 The homepage contains no footer links to legal documents. No page references data processing agreements, retention schedules, data subject rights procedures, security certifications, or sub-processor disclosures. The blog posts contain no disclaimers about data collection practices or user rights.
 
-## 2. Deep Dive Into the Tracking
+## Deep Dive Into the Tracking
 
 ### Script Architecture Overview
 
@@ -205,7 +205,7 @@ Payload compression activates when data exceeds 1024 bytes. The script checks fo
 
 The endpoint URL `https://d.hs.uy/i` appears nowhere in public documentation. The domain `hs.uy` resolves in South Africa but bears no obvious connection to "HyperBiscuit" or "marketing analytics" in WHOIS records accessible via public lookup services.
 
-## 3. Obfuscation & Transparency
+## Obfuscation & Transparency
 
 ### Minification as Normal Practice
 
@@ -272,7 +272,7 @@ This notice omits these required elements:
 
 The notice provides only one button: _"Okay, thanks."_ **No reject option exists.** Declining becomes impossible within the interface itself.
 
-## 4. Deployment in Education
+## Deployment in Education
 
 ### Institutions Using This Script
 
@@ -311,7 +311,7 @@ Two plausible scenarios explain institutional deployment of this script.
 
 Both scenarios violate POPIA. Scenario one reflects conscious non-compliance. Scenario two reflects negligent non-compliance. Neither scenario excuses liability from the institution.
 
-## 5. POPIA Legal Analysis
+## POPIA Legal Analysis
 
 ### Overview of the Act
 
@@ -435,7 +435,7 @@ Institutions must publish the Information Officer's contact details. Public bodi
 
 Complaints reach the Regulator via the prescribed form available on inforegulator.org.za/complaints or via email to PAIAComplaints@inforegulator.org.za. The Regulator must advise the complainant and the responsible party on proposed corrective action within reasonable timeframes.
 
-## 6. GDPR Legal Analysis
+## GDPR Legal Analysis
 
 ### Article 3: Territorial Scope
 
@@ -446,23 +446,24 @@ Article 3 extends GDPR jurisdiction beyond EU borders. The regulation applies wh
 - The processing monitors behavior occurring within the EU
 
 South African universities attract international applicants from European nations. Prospective students access application portals from Germany, France, Netherlands, United Kingdom, and other EU member states. When a French applicant submits their ID number and bank statement through a South African portal tracking them via HyperBiscuit, the processing occurs in the EU. GDPR applies.
-Article 5: Principles Relating to Processing
 
-### Article 5 establishes seven principles:
+### Article 5: Principles Relating to Processing
 
-Lawfulness, fairness, and transparency require legal basis, equitable treatment, and clear communication. The script's silent operation without notification violates transparency. Processing without consent violates lawfulness.
+#### Article 5 establishes seven principles:
 
-Purpose limitation restricts collection to specified, explicit, and legitimate purposes. Application submission purposes do not extend to third-party marketing analytics. The mismatch violates Article 5(1)(b).
+1. Lawfulness, fairness, and transparency require legal basis, equitable treatment, and clear communication. The script's silent operation without notification violates transparency. Processing without consent violates lawfulness.
 
-Data minimization demands collecting only what is necessary. Transmitting device fingerprints, geolocation, and behavioral telemetry serves marketing optimization, not admission evaluation. This excess violates Article 5(1)(c).
+2. Purpose limitation restricts collection to specified, explicit, and legitimate purposes. Application submission purposes do not extend to third-party marketing analytics. The mismatch violates Article 5(1)(b).
 
-Accuracy requires keeping information correct and up to date. Capturing incomplete form submissions and transmitting duplicate corrections creates inaccuracies. No correction mechanism exists.
+3. Data minimization demands collecting only what is necessary. Transmitting device fingerprints, geolocation, and behavioral telemetry serves marketing optimization, not admission evaluation. This excess violates Article 5(1)(c).
 
-Storage limitation mandates retention for no longer than necessary. HyperBiscuit publishes no retention schedules. Data persists indefinitely unless individuals manually delete browser storage.
+4. Accuracy requires keeping information correct and up to date. Capturing incomplete form submissions and transmitting duplicate corrections creates inaccuracies. No correction mechanism exists.
 
-Integrity and confidentiality require appropriate security measures. Undisclosed third-party transmission to a company with no published security documentation fails integrity and confidentiality requirements.
+5. Storage limitation mandates retention for no longer than necessary. HyperBiscuit publishes no retention schedules. Data persists indefinitely unless individuals manually delete browser storage.
 
-Accountability places burden on controllers to demonstrate compliance. Institutions cannot document compliance because they lack visibility into HyperBiscuit's practices.
+6. Integrity and confidentiality require appropriate security measures. Undisclosed third-party transmission to a company with no published security documentation fails integrity and confidentiality requirements.
+
+7. Accountability places burden on controllers to demonstrate compliance. Institutions cannot document compliance because they lack visibility into HyperBiscuit's practices.
 
 ### Article 6: Lawfulness of Processing
 
@@ -597,7 +598,7 @@ France's CNIL fined Google €150 million in 2022 for cookie banner dark pattern
 
 South African institutions serving EU applicants face exposure under GDPR. The penalties exceed POPIA's ZAR 10 million ceiling significantly when expressed in euros.
 
-## 7. Practical Defense Strategies
+## Practical Defense Strategies
 
 ### Browser Extensions Providing Immediate Protection
 
@@ -774,7 +775,7 @@ Before reintroducing analytics scripts, obtain written data processing agreement
 
 Verify HyperBiscuit can provide such an agreement. If not, select alternative providers with proper compliance infrastructure.
 
-## 8. Recommended Alternatives
+## Recommended Alternatives
 
 ### Privacy-Focused Analytics Providers
 
@@ -816,7 +817,7 @@ Plausible features:
 - Real-time analytics dashboard
 - Integration with WordPress, Ghost, and static site generators
 
-## 9. Conclusion & Summary
+## Conclusion & Summary
 
 ### Technical Summary
 
