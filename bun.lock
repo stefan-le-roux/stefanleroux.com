@@ -7,7 +7,7 @@
 			"dependencies": {
 				"@astrojs/mdx": "7.0.5",
 				"@astrojs/sitemap": "3.7.3",
-				"astro": "7.2.0",
+				"astro": "7.2.1",
 			},
 		},
 	},
@@ -1086,7 +1086,7 @@
 		],
 
 		"astro": [
-			"astro@7.2.0",
+			"astro@7.2.1",
 			"",
 			{
 				"dependencies": {
@@ -1148,7 +1148,7 @@
 				"optionalPeers": ["@astrojs/markdown-remark"],
 				"bin": { "astro": "./bin/astro.mjs" },
 			},
-			"sha512-lLTYzx3fOvCmtwD3JVBLQcbORbIOW1/j0R+3IvJx/XKwMGrk7mFnF0BYSOeRiNw1qHUR5mdA6+hRnyvyDfqrWQ==",
+			"sha512-ynyMTiyF//GLcd8+gRNbvcKgS1ht+qTgp/fkkHIpGYNILLseQqQRuPZ9PqXYKfsact4J1emZaXRDpg2bl35Pag==",
 		],
 
 		"axobject-query": [
