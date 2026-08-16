@@ -146,7 +146,7 @@ The script also reads `navigator.geolocation.watchPosition` availability, storin
 
 ### Category Three: Form Field Capture
 
-This component presents the greatest privacy concern. The script attaches a `submit` event listener at the document level using capture phase: `s.addEventListener("submit", V, {capture: true})`.
+This component presents the greatest privacy concern. The script attaches a `submit` event listener at the document level using capture phase: `s.addEventListener("submit", V, {capture: true})`
 
 The handler iterates every element inside the submitted form. For fields excluding `type="file"`, `type="submit"`, and `type="hidden"`, the script pushes objects containing:
 
