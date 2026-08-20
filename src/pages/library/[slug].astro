@@ -3,10 +3,10 @@ import LayoutPost from "../../layouts/LayoutPost.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
-	const [blogPosts, auditPosts, sharePosts] = await Promise.all([
+	const [blogPosts, auditPosts, repoPosts] = await Promise.all([
 		getCollection("blog"),
 		getCollection("audit"),
-		getCollection("share"),
+		getCollection("repo"),
 	]);
 
 	const isDraft = (entry: any) => entry.data.status !== "draft";
@@ -14,7 +14,7 @@ export async function getStaticPaths() {
 	const allEntries = [
 		...blogPosts.filter(isDraft).map((entry) => ({ ...entry, collectionType: "blog" })),
 		...auditPosts.filter(isDraft).map((entry) => ({ ...entry, collectionType: "audit" })),
-		...sharePosts.filter(isDraft).map((entry) => ({ ...entry, collectionType: "share" })),
+		...repoPosts.filter(isDraft).map((entry) => ({ ...entry, collectionType: "repo" })),
 	];
 
 	// ⚠️ CRITICAL: Check for slug collisions
